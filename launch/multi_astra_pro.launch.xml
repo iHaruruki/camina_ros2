@@ -1,0 +1,25 @@
+<launch>
+    <arg name="device_type" default="astra_pro"/>
+    <arg name="device_num" default="2"/>
+
+    <arg name="camera1_serial_number" default="'18081530273'"/>
+    <arg name="camera2_serial_number" default="'19052230002'"/>
+
+    <arg name="camera1_name" default="camera1"/>
+    <arg name="camera2_name" default="camera2"/>
+
+    <include file="$(find-pkg-share astra_camera)/launch/$(var device_type).launch.xml">
+        <arg name="camera_name" value="$(var camera1_name)"/>
+        <arg name="serial_number" value="$(var camera1_serial_number)"/>
+        <arg name="device_num" value="$(var device_num)"/>
+    </include>
+
+    <include file="$(find-pkg-share astra_camera)/launch/$(var device_type).launch.xml">
+        <arg name="camera_name" value="$(var camera2_name)"/>
+        <arg name="serial_number" value="$(var camera2_serial_number)"/>
+        <arg name="device_num" value="$(var device_num)"/>
+    </include>
+
+    <node pkg="tf2_ros" exec="static_transform_publisher" name="camera_tf_publisher"
+          args="0 0 0 0 0 0 $(var camera1_name)_link $(var camera2_name)_link"/>
+</launch>
