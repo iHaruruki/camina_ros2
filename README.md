@@ -15,7 +15,7 @@
 
 ### Dependent packages
 ```bash
-sudo apt install ros-humble-urdf-tutorial ros-humble-rqt-tf-tree
+sudo apt install ros-$ROS_DISTRO-urdf-tutorial ros-$ROS_DISTRO-rqt-tf-tree ros-$ROS_DISTRO-xacro ros-$ROS_DISTRO-joint-state-publisher ros-$ROS_DISTRO-joint-state-publisher-gui
 ```
 
 ### Clone this package
