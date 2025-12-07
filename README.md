@@ -11,7 +11,7 @@
 [ros2_astra_camera_setup](https://github.com/iHaruruki/ros2_astra_camera_setup.git)
 
 ### LiDAR setup
-[urg_node2_setup](https://github.com/iHaruruki/urg_node2_setup.git)
+[urg_node2_setup](https://github.com/Hokuyo-aut/urg_node2.git)
 
 ### Dependent packages
 ```bash
