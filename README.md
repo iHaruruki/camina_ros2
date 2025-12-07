@@ -50,11 +50,11 @@ ros2 launch urdf_tutorial display.launch.py model:=$HOME/ros2_ws/src/camina_ros2
 ### Run MediaPipe
 ```bash
 # NUC35
-ros2 launch camina_ros2 front_ramera_node
+ros2 run camina_ros2 front_ramera_node
 ```
 ```bash
 # NUC38
-ros2 launch camina_ros2 rear_ramera_node
+ros2 run camina_ros2 rear_ramera_node
 ```
 
 ## Adjustment
