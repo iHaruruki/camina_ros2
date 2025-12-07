@@ -22,6 +22,15 @@ ros2 launch astra_camera astra_pro.launch.xml camera_name:=camera_front publish_
 # NUC38
 ros2 launch astra_camera astra_pro.launch.xml camera_name:=camera_rear publish_tf:=false
 ```
+### Run MediaPipe
+```bash
+# NUC35
+ros2 launch camina_ros2 front_ramera_node
+```
+```bash
+# NUC38
+ros2 launch camina_ros2 rear_ramera_node
+```
 
 ## Parameter
 Check URDF
