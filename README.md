@@ -33,10 +33,12 @@ source install/setup.bash
 
 ## 🎮 How to use
 ### Run Camera
+front camera
 ```bash
 # NUC35
 ros2 launch astra_camera astra_pro.launch.xml camera_name:=camera_front publish_tf:=false
 ```
+rear camera
 ```bash
 # NUC38
 ros2 launch astra_camera astra_pro.launch.xml camera_name:=camera_rear publish_tf:=false
@@ -44,20 +46,22 @@ ros2 launch astra_camera astra_pro.launch.xml camera_name:=camera_rear publish_t
 
 ### Run `robot_state_publisher`
 ```bash
-ros2 launch urdf_tutorial display.launch.py model:=$HOME/ros2_ws/src/camina_ros2/urdf/camina.urdf
+ros2 launch camina_ros2 camina.launch.py
 ```
 
 ### Run MediaPipe
+Mediapipe for front camera
 ```bash
 # NUC35
 ros2 run camina_ros2 front_ramera_node
 ```
+Mediapipe for rear camera
 ```bash
 # NUC38
 ros2 run camina_ros2 rear_ramera_node
 ```
 
-## Adjustment
+## :triangular_ruler: Adjustment
 ### Check URDF / カメラの位置や姿勢を変更する
 Change `camina_ros2/urdf/camina.urdf` file.  
 `camina_ros2/urdf/camina.urdf`を変更するとカメラの位置関係を変更できる
@@ -96,6 +100,12 @@ MediaPipe Pose
 URDF
 - [URDF](https://docs.ros.org/en/humble/Tutorials/Intermediate/URDF/URDF-Main.html)
 
+tf2
+- [Introducing tf2](https://docs.ros.org/en/humble/Tutorials/Intermediate/Tf2/Introduction-To-Tf2.html)
+
 tf2_ros / TransformBroadcaster（Python）
 - [Writing a broadcaster (Python)](https://docs.ros.org/en/foxy/Tutorials/Intermediate/Tf2/Writing-A-Tf2-Broadcaster-Py.html?utm_source=chatgpt.com)
 - [Writing a tf2 broadcaster (Python)[ROS1]](https://wiki.ros.org/tf2/Tutorials/Writing%20a%20tf2%20broadcaster%20%28Python%29?utm_source=chatgpt.com)
+
+emoji
+- [markdown emoji markup](https://gist.github.com/rxaviers/7360908)
