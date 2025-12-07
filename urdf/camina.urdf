@@ -23,7 +23,14 @@
   </material>
 
   <!-- base frame -->
+  <link name="map"/>
+
   <link name="base_link"/>
+
+  <joint name="base_map_joint" type="fixed">
+    <parent link="map"/>
+    <child link="base_link"/>
+  </joint>
 
   <!-- front_camera -->
   <link name="camera_front_link">
