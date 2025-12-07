@@ -8,7 +8,7 @@
 
 ## 🛠️ Setup
 ```bash
-sudo apt install ros-humble-urdf-tutorial
+sudo apt install ros-humble-urdf-tutorial ros-humble-rqt-tf-tree
 ```
 
 ## 🎮 How to use
@@ -19,10 +19,16 @@ ros2 launch orbbec_camera multi_camera.launch.py
 ```
 
 ## Parameter
-
+Check URDF
 ```bash
 ros2 launch urdf_tutorial display.launch.py model:=$HOME/ros2_ws/src/camina_ros2/urdf/camina.urdf
 ```
+Check tf_tree
+```bash
+rqt
+```
+Within the `rqt` window, navigate to `Plugins -> Visualization -> TF Tree`.
+
 
 ## 📚 Reference
 ROS2

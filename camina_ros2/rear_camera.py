@@ -38,11 +38,11 @@ class RearCameraNode(Node):
         self.declare_parameter('roi_height', 300)
 
         # topics / frames (リアカメラ既定)
-        self.declare_parameter('color_topic', '/camera_02/color/image_raw')
-        self.declare_parameter('color_info_topic', '/camera_02/color/camera_info')
-        self.declare_parameter('depth_topic', '/camera_02/depth/image_raw')
-        self.declare_parameter('depth_info_topic', '/camera_02/depth/camera_info')
-        self.declare_parameter('camera_frame', 'camera_02_depth_optical_frame')
+        self.declare_parameter('color_topic', '/camera_rear/color/image_raw')
+        self.declare_parameter('color_info_topic', '/camera_rear/color/camera_info')
+        self.declare_parameter('depth_topic', '/camera_reat/depth/image_raw')
+        self.declare_parameter('depth_info_topic', '/camera_rear/depth/camera_info')
+        self.declare_parameter('camera_frame', 'camera_rear_depth_optical_frame')
         self.declare_parameter('publish_face_tf', False)   # 顔478点は重いので既定OFF
         self.declare_parameter('publish_body_tf', True)     # 統合ランドマークTF配信
         self.declare_parameter('tf_rate_hz', 30.0)          # tfスロットリング

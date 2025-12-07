@@ -38,11 +38,11 @@ class FrontCameraNode(Node):
         self.declare_parameter('roi_height', 300)
 
         # topics / frames
-        self.declare_parameter('color_topic', '/camera/color/image_raw')
-        self.declare_parameter('color_info_topic', '/camera/color/camera_info')
-        self.declare_parameter('depth_topic', '/camera/depth/image_raw')
-        self.declare_parameter('depth_info_topic', '/camera/depth/camera_info')
-        self.declare_parameter('camera_frame', 'camera_01_depth_optical_frame')
+        self.declare_parameter('color_topic', '/camera_front/color/image_raw')
+        self.declare_parameter('color_info_topic', '/camera_front/color/camera_info')
+        self.declare_parameter('depth_topic', '/camera_front/depth/image_raw')
+        self.declare_parameter('depth_info_topic', '/camera_front/depth/camera_info')
+        self.declare_parameter('camera_frame', 'camera_front_depth_optical_frame')
         self.declare_parameter('publish_face_tf', False)   # 顔478点は重いので既定OFF
         self.declare_parameter('publish_body_tf', True)     # 統合ランドマークTF配信
         self.declare_parameter('tf_rate_hz', 30.0)          # tfスロットリング
