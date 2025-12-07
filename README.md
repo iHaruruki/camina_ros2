@@ -4,8 +4,6 @@
 ## 🚀 Overview
 - Whole-body pose estimation
 
-## 📦 Feature
-
 ## 🛠️ Setup
 ### Camera setup
 [ros2_astra_camera_setup](https://github.com/iHaruruki/ros2_astra_camera_setup.git)
@@ -32,6 +30,12 @@ source install/setup.bash
 ```
 
 ## 🎮 How to use
+### Run `robot_state_publisher`
+```bash
+# NUC35
+ros2 launch camina_ros2 camina.launch.py
+```
+
 ### Run Camera
 front camera
 ```bash
@@ -44,9 +48,10 @@ rear camera
 ros2 launch astra_camera astra_pro.launch.xml camera_name:=camera_rear publish_tf:=false
 ```
 
-### Run `robot_state_publisher`
+### Run LiDAR
 ```bash
-ros2 launch camina_ros2 camina.launch.py
+# NUC35
+ros2 launch urg_node2 urg_node2.launch.py
 ```
 
 ### Run MediaPipe
