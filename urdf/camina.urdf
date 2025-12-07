@@ -41,13 +41,21 @@
     <origin xyz="0.0 0.0 0.9" rpy="0 0 0"/>
   </joint>
 
-  <!-- Optical frame -->
+  <!-- camera_front_depth_frame  -->
+  <link name="camera_front_depth_frame"/>
+
+  <joint name="camera_front_depth_joint" type="fixed">
+    <parent link="camera_front_link"/>
+    <child link="camera_front_depth_frame"/>
+    <origin xyz="0.0 0.0 0.0" rpy="0 0 0"/>
+  </joint>
+
+  <!-- camera_front_depth_optical_frame  -->
   <link name="camera_front_depth_optical_frame"/>
 
   <joint name="camera_front_optical_joint" type="fixed">
-    <parent link="camera_front_link"/>
+    <parent link="camera_front_depth_frame"/>
     <child link="camera_front_depth_optical_frame"/>
-    <!-- Typical ROS camera optical frame convention -->
     <origin xyz="0.0 0.0 0.0" rpy="-1.570796 0 -1.570796"/>
   </joint>
 
@@ -73,7 +81,6 @@
   <joint name="camera_rear_optical_joint" type="fixed">
     <parent link="camera_rear_link"/>
     <child link="camera_rear_depth_optical_frame"/>
-    <!-- Typical ROS camera optical frame convention -->
     <origin xyz="0.0 0.0 0.0" rpy="-1.570796 0 -1.570796"/>
   </joint>
 
