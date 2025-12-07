@@ -21,6 +21,12 @@ ros2 launch astra_camera astra_pro.launch.xml camera_name:=camera_front publish_
 # NUC38
 ros2 launch astra_camera astra_pro.launch.xml camera_name:=camera_rear publish_tf:=false
 ```
+
+### Run `robot_state_publisher`
+```bash
+ros2 launch urdf_tutorial display.launch.py model:=$HOME/ros2_ws/src/camina_ros2/urdf/camina.urdf
+```
+
 ### Run MediaPipe
 ```bash
 # NUC35
