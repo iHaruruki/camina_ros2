@@ -41,6 +41,24 @@
     <origin xyz="0.0 0.0 0.9" rpy="0 0 0"/>
   </joint>
 
+  <!-- camera_front_color_frame  -->
+  <link name="camera_front_color_frame"/>
+
+  <joint name="camera_front_color_joint" type="fixed">
+    <parent link="camera_front_link"/>
+    <child link="camera_front_color_frame"/>
+    <origin xyz="0.0 0.0 0.0" rpy="0 0 0"/>
+  </joint>
+
+  <!-- camera_front_color_optical_frame  -->
+  <link name="camera_front_color_optical_frame"/>
+
+  <joint name="camera_front_color_optical_joint" type="fixed">
+    <parent link="camera_front_color_frame"/>
+    <child link="camera_front_color_optical_frame"/>
+    <origin xyz="0.0 0.0 0.0" rpy="-1.570796 0 -1.570796"/>
+  </joint>
+
   <!-- camera_front_depth_frame  -->
   <link name="camera_front_depth_frame"/>
 
@@ -53,7 +71,7 @@
   <!-- camera_front_depth_optical_frame  -->
   <link name="camera_front_depth_optical_frame"/>
 
-  <joint name="camera_front_optical_joint" type="fixed">
+  <joint name="camera_front_depth_optical_joint" type="fixed">
     <parent link="camera_front_depth_frame"/>
     <child link="camera_front_depth_optical_frame"/>
     <origin xyz="0.0 0.0 0.0" rpy="-1.570796 0 -1.570796"/>
