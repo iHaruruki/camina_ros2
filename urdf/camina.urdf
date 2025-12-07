@@ -3,11 +3,11 @@
 
   <!-- Color -->
   <material name="black">
-      <color rgba="0.0 0.0 0.0 1"/>
+    <color rgba="0.0 0.0 0.0 1"/>
   </material>
 
   <material name="grey">
-      <color rgba="0.5 0.5 0.5 1"/>
+    <color rgba="0.5 0.5 0.5 1"/>
   </material>
 
   <!-- frame -->
@@ -29,12 +29,14 @@
     <origin xyz="0.0 0.0 1.0" rpy="0 0 0"/>
   </joint>
 
-  <link name="camera_front_depth_optical_frame">
+  <!-- Optical frame -->
+  <link name="camera_front_depth_optical_frame"/>
 
   <joint name="camera_front_optical_joint" type="fixed">
     <parent link="camera_front_link"/>
     <child link="camera_front_depth_optical_frame"/>
-    <origin xyz="0.0 0.0 0.0" rpy="0 0 0"/>
+    <!-- Typical ROS camera optical frame convention -->
+    <origin xyz="0.0 0.0 0.0" rpy="-1.570796 0 -1.570796"/>
   </joint>
 
 </robot>
