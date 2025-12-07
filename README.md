@@ -57,12 +57,15 @@ ros2 launch camina_ros2 front_ramera_node
 ros2 launch camina_ros2 rear_ramera_node
 ```
 
-## Parameter
-Check URDF
+## Adjustment
+### Check URDF / カメラの位置や姿勢を変更する
+Change `camina_ros2/urdf/camina.urdf` file.
+
+### rviz2に`camina.urdf`を表示する
 ```bash
 ros2 launch urdf_tutorial display.launch.py model:=$HOME/ros2_ws/src/camina_ros2/urdf/camina.urdf
 ```
-Check tf_tree
+Check tf_tree / TFの接続関係を確認する
 ```bash
 rqt
 ```
