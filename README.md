@@ -59,17 +59,25 @@ ros2 run camina_ros2 rear_ramera_node
 
 ## Adjustment
 ### Check URDF / カメラの位置や姿勢を変更する
-Change `camina_ros2/urdf/camina.urdf` file.
+Change `camina_ros2/urdf/camina.urdf` file.  
+`camina_ros2/urdf/camina.urdf`を変更するとカメラの位置関係を変更できる
 
 ### rviz2に`camina.urdf`を表示する
 ```bash
 ros2 launch urdf_tutorial display.launch.py model:=$HOME/ros2_ws/src/camina_ros2/urdf/camina.urdf
 ```
-Check tf_tree / TFの接続関係を確認する
+### Check tf_tree / TFの接続関係を確認する
 ```bash
-rqt
+ros2 run tf2_tools view_frames
 ```
-Within the `rqt` window, navigate to `Plugins -> Visualization -> TF Tree`.
+A `.pdf` file will be created in the directory where you executed it.  
+実行したディレクトリに`.pdf`ファイルが作られる
+
+### tf2_echo reports the transform between any two frames broadcast over ROS. / 特定の2つのフレーム間の変換を確認する
+```bash
+# ros2 run tf2_ros tf2_echo [source_frame] [target_frame]
+ros2 run tf2_ros tf2_echo base_link camera_front_link
+```
 
 
 ## 📚 Reference
