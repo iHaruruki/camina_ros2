@@ -12,8 +12,7 @@ sudo apt install ros-humble-urdf-tutorial ros-humble-rqt-tf-tree
 ```
 
 ## 🎮 How to use
-### Camera launch
-Run camera
+### Run Camera
 ```bash
 # NUC35
 ros2 launch astra_camera astra_pro.launch.xml camera_name:=camera_front publish_tf:=false
