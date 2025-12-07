@@ -111,11 +111,20 @@
     <origin xyz="0.0 0.0 0.0" rpy="-1.570796 0 -1.570796"/>
   </joint>
 
-  <!-- Optical frame -->
+  <!-- camera_rear_depth_frame  -->
+  <link name="camera_rear_depth_frame"/>
+
+  <joint name="camera_rear_depth_joint" type="fixed">
+    <parent link="camera_rear_link"/>
+    <child link="camera_rear_depth_frame"/>
+    <origin xyz="0.0 0.0 0.0" rpy="0 0 0"/>
+  </joint>
+
+  <!-- camera_rear_depth_optical_frame  -->
   <link name="camera_rear_depth_optical_frame"/>
 
-  <joint name="camera_rear_optical_joint" type="fixed">
-    <parent link="camera_rear_link"/>
+  <joint name="camera_rear_depth_optical_joint" type="fixed">
+    <parent link="camera_rear_depth_frame"/>
     <child link="camera_rear_depth_optical_frame"/>
     <origin xyz="0.0 0.0 0.0" rpy="-1.570796 0 -1.570796"/>
   </joint>
