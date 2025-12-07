@@ -26,7 +26,7 @@
   <joint name="camera_front_joint" type="fixed">
     <parent link="base_link"/>
     <child link="camera_front_link"/>
-    <origin xyz="0.0 0.0 1.0" rpy="0 0 0"/>
+    <origin xyz="0.0 0.0 0.9" rpy="0 0 0"/>
   </joint>
 
   <!-- Optical frame -->
@@ -52,7 +52,7 @@
   <joint name="camera_rear_joint" type="fixed">
     <parent link="base_link"/>
     <child link="camera_rear_link"/>
-    <origin xyz="3.0 0.0 1.0" rpy="0 0 3.14"/>
+    <origin xyz="3.8 0.0 0.9" rpy="0 0 3.14"/>
   </joint>
 
   <!-- Optical frame -->
