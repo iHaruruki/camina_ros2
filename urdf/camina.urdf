@@ -13,15 +13,8 @@
   <!-- frame -->
   <link name="base_link"/>
 
-  <link name="camera_link"/>
-
-  <joint name="map_base_joint" type="fixed">
-    <parent link="base_link"/>
-    <child link="camera_link"/>
-  </joint>
-
   <!-- front_camera -->
-  <link name="camera_front_depth_frame">
+  <link name="camera_front_link">
     <visual>
       <geometry>
         <box size="0.0123 0.0653 0.0225"/>
@@ -31,25 +24,17 @@
   </link>
 
   <joint name="camera_front_joint" type="fixed">
-    <parent link="camera_link"/>
-    <child link="camera_front_depth_frame"/>
+    <parent link="base_link"/>
+    <child link="camera_front_link"/>
     <origin xyz="0.0 0.0 1.0" rpy="0 0 0"/>
   </joint>
 
-  <!-- rear_camera -->
-  <link name="camera_rear_depth_frame">
-    <visual>
-      <geometry>
-        <box size="0.0123 0.0653 0.0225"/>
-      </geometry>
-      <material name="grey" />
-    </visual>
-  </link>
+  <link name="camera_front_depth_optical_frame">
 
-  <joint name="camera_rear_joint" type="fixed">
-    <parent link="camera_link"/>
-    <child link="camera_rear_depth_frame"/>
-    <origin xyz="4.0 0.0 1.0" rpy="0 0 3.14"/>
+  <joint name="camera_front_optical_joint" type="fixed">
+    <parent link="camera_front_link"/>
+    <child link="camera_front_depth_optical_frame"/>
+    <origin xyz="0.0 0.0 0.0" rpy="0 0 0"/>
   </joint>
 
 </robot>
