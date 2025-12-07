@@ -39,4 +39,32 @@
     <origin xyz="0.0 0.0 0.0" rpy="-1.570796 0 -1.570796"/>
   </joint>
 
+  <!-- rear_camera -->
+  <link name="camera_rear_link">
+    <visual>
+      <geometry>
+        <box size="0.0123 0.0653 0.0225"/>
+      </geometry>
+      <material name="grey" />
+    </visual>
+  </link>
+
+  <joint name="camera_rear_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="camera_rear_link"/>
+    <origin xyz="3.0 0.0 1.0" rpy="0 0 3.14"/>
+  </joint>
+
+  <!-- Optical frame -->
+  <link name="camera_rear_depth_optical_frame"/>
+
+  <joint name="camera_rear_optical_joint" type="fixed">
+    <parent link="camera_rear_link"/>
+    <child link="camera_rear_depth_optical_frame"/>
+    <!-- Typical ROS camera optical frame convention -->
+    <origin xyz="0.0 0.0 0.0" rpy="-1.570796 0 -1.570796"/>
+  </joint>
+
+  <!-- LiDAR -->
+
 </robot>
