@@ -82,6 +82,8 @@ ros2 run tf2_tools view_frames
 A `.pdf` file will be created in the directory where you executed it.  
 実行したディレクトリに`.pdf`ファイルが作られる
 
+![camina_tf_tree](media/camina_tf_tree.png)
+
 ### tf2_echo reports the transform between any two frames broadcast over ROS. / 特定の2つのフレーム間の変換を確認する
 ```bash
 # ros2 run tf2_ros tf2_echo [source_frame] [target_frame]
