@@ -7,8 +7,28 @@
 ## 📦 Feature
 
 ## 🛠️ Setup
+### Camera setup
+[ros2_astra_camera_setup](https://github.com/iHaruruki/ros2_astra_camera_setup.git)
+
+### LiDAR setup
+[urg_node2_setup](https://github.com/iHaruruki/urg_node2_setup.git)
+
+### Dependent packages
 ```bash
 sudo apt install ros-humble-urdf-tutorial ros-humble-rqt-tf-tree
+```
+
+### Clone this package
+```bash
+cd ~/ros2_ws/src
+git clone https://github.com/iHaruruki/camina_ros2.git
+```
+
+### Build
+```bash
+cd ~/ros2_ws
+colcon build --symlink-install --packages-select camina_ros2
+source install/setup.bash
 ```
 
 ## 🎮 How to use
