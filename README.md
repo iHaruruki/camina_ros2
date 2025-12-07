@@ -30,6 +30,20 @@ source install/setup.bash
 ```
 
 ## 🎮 How to use
+### Checking inter-device communication connections / デバイス間通信の接続確認
+```bash
+# NUC 38
+ros2 run demo_nodes_cpp talker
+```
+```bash
+# NUC 35
+ros2 run demo_nodes_cpp listener
+```
+Result / 実行結果
+```bash
+
+```
+
 ### Run `robot_state_publisher`
 ```bash
 # NUC35
