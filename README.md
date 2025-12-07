@@ -15,7 +15,12 @@ sudo apt install ros-humble-urdf-tutorial ros-humble-rqt-tf-tree
 ### Camera launch
 Run camera
 ```bash
-ros2 launch orbbec_camera multi_camera.launch.py
+# NUC35
+ros2 launch astra_camera astra_pro.launch.xml camera_name:=camera_front
+```
+```bash
+# NUC38
+ros2 launch astra_camera astra_pro.launch.xml camera_name:=camera_front
 ```
 
 ## Parameter
