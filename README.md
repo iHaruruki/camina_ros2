@@ -41,7 +41,12 @@ ros2 run demo_nodes_cpp listener
 ```
 Result / 実行結果
 ```bash
-
+ros2 run demo_nodes_cpp listener
+[INFO] [1765264820.324285384] [listener]: I heard: [Hello World: 1]
+[INFO] [1765264821.324176160] [listener]: I heard: [Hello World: 2]
+[INFO] [1765264822.324076114] [listener]: I heard: [Hello World: 3]
+[INFO] [1765264823.324220092] [listener]: I heard: [Hello World: 4]
+[INFO] [1765264824.324185182] [listener]: I heard: [Hello World: 5]
 ```
 
 ### Run `robot_state_publisher`
