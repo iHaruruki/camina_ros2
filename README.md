@@ -48,6 +48,9 @@ ros2 run demo_nodes_cpp listener
 [INFO] [1765264823.324220092] [listener]: I heard: [Hello World: 4]
 [INFO] [1765264824.324185182] [listener]: I heard: [Hello World: 5]
 ```
+> [!NOTE]
+> [ROS_DOMAIN_ID](https://docs.ros.org/en/humble/Concepts/Intermediate/About-Domain-ID.html)  
+> [Configuring environment](https://docs.ros.org/en/humble/Tutorials/Beginner-CLI-Tools/Configuring-ROS2-Environment.html)
 
 ### Run `robot_state_publisher`
 ```bash
