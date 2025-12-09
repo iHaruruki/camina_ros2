@@ -4,17 +4,15 @@ Panels:
     Name: Displays
     Property Tree Widget:
       Expanded:
-        - /Global Options1
-        - /Status1
-        - /LaserScan1
-        - /LaserScan1/Topic1
-        - /TF1/Frames1
+        - /DepthCloud1/Auto Size1
+        - /DepthCloud2/Auto Size1
       Splitter Ratio: 0.5
-    Tree Height: 765
+    Tree Height: 968
   - Class: rviz_common/Selection
     Name: Selection
   - Class: rviz_common/Tool Properties
     Expanded:
+      - /2D Goal Pose1
       - /Publish Point1
     Name: Tool Properties
     Splitter Ratio: 0.5886790156364441
@@ -23,6 +21,11 @@ Panels:
       - /Current View1
     Name: Views
     Splitter Ratio: 0.5
+  - Class: rviz_common/Time
+    Experimental: false
+    Name: Time
+    SyncMode: 0
+    SyncSource: DepthCloud
 Visualization Manager:
   Class: ""
   Displays:
@@ -45,6 +48,84 @@ Visualization Manager:
       Reference Frame: <Fixed Frame>
       Value: true
     - Alpha: 1
+      Auto Size:
+        Auto Size Factor: 1
+        Value: true
+      Autocompute Intensity Bounds: true
+      Autocompute Value Bounds:
+        Max Value: 10
+        Min Value: -10
+        Value: true
+      Axis: Z
+      Channel Name: intensity
+      Class: rviz_default_plugins/DepthCloud
+      Color: 255; 255; 255
+      Color Image Topic: /camera_front/color/image_raw
+      Color Transformer: RGB8
+      Color Transport Hint: raw
+      Decay Time: 0
+      Depth Map Topic: /camera_front/depth/image_raw
+      Depth Map Transport Hint: raw
+      Enabled: true
+      Invert Rainbow: false
+      Max Color: 255; 255; 255
+      Max Intensity: 4096
+      Min Color: 0; 0; 0
+      Min Intensity: 0
+      Name: DepthCloud
+      Occlusion Compensation:
+        Occlusion Time-Out: 30
+        Value: false
+      Position Transformer: XYZ
+      Queue Size: 5
+      Reliability Policy: Reliable
+      Selectable: true
+      Size (Pixels): 3
+      Style: Points
+      Topic Filter: true
+      Use Fixed Frame: true
+      Use rainbow: true
+      Value: true
+    - Alpha: 1
+      Auto Size:
+        Auto Size Factor: 1
+        Value: true
+      Autocompute Intensity Bounds: true
+      Autocompute Value Bounds:
+        Max Value: 10
+        Min Value: -10
+        Value: true
+      Axis: Z
+      Channel Name: intensity
+      Class: rviz_default_plugins/DepthCloud
+      Color: 255; 255; 255
+      Color Image Topic: /camera_rear/color/image_raw
+      Color Transformer: RGB8
+      Color Transport Hint: raw
+      Decay Time: 0
+      Depth Map Topic: /camera_rear/depth/image_raw
+      Depth Map Transport Hint: raw
+      Enabled: true
+      Invert Rainbow: false
+      Max Color: 255; 255; 255
+      Max Intensity: 4096
+      Min Color: 0; 0; 0
+      Min Intensity: 0
+      Name: DepthCloud
+      Occlusion Compensation:
+        Occlusion Time-Out: 30
+        Value: false
+      Position Transformer: XYZ
+      Queue Size: 5
+      Reliability Policy: Reliable
+      Selectable: true
+      Size (Pixels): 3
+      Style: Points
+      Topic Filter: true
+      Use Fixed Frame: true
+      Use rainbow: true
+      Value: true
+    - Alpha: 1
       Autocompute Intensity Bounds: true
       Autocompute Value Bounds:
         Max Value: 10
@@ -53,26 +134,27 @@ Visualization Manager:
       Axis: Z
       Channel Name: intensity
       Class: rviz_default_plugins/LaserScan
-      Color: 255; 255; 255
-      Color Transformer: Intensity
+      Color: 0; 255; 0
+      Color Transformer: FlatColor
       Decay Time: 0
       Enabled: true
       Invert Rainbow: false
       Max Color: 255; 255; 255
-      Max Intensity: 8052
+      Max Intensity: 4096
       Min Color: 0; 0; 0
-      Min Intensity: 51
+      Min Intensity: 0
       Name: LaserScan
       Position Transformer: XYZ
       Selectable: true
       Size (Pixels): 3
       Size (m): 0.009999999776482582
-      Style: Flat Squares
+      Style: Points
       Topic:
         Depth: 5
         Durability Policy: Volatile
+        Filter size: 10
         History Policy: Keep Last
-        Reliability Policy: Best Effort
+        Reliability Policy: Reliable
         Value: /scan
       Use Fixed Frame: true
       Use rainbow: true
@@ -95,39 +177,64 @@ Visualization Manager:
         Expand Link Details: false
         Expand Tree: false
         Link Tree Style: Links in Alphabetic Order
-        base_footprint:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
         base_link:
           Alpha: 1
           Show Axes: false
           Show Trail: false
-          Value: true
-        base_scan:
+        camera_front_color_frame:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        camera_front_color_optical_frame:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        camera_front_depth_frame:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        camera_front_depth_optical_frame:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        camera_front_link:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
-        caster_back_link:
+        camera_rear_color_frame:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        camera_rear_color_optical_frame:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        camera_rear_depth_frame:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        camera_rear_depth_optical_frame:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        camera_rear_link:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
-        imu_link:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-        wheel_left_link:
+        laser:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
-        wheel_right_link:
+        map:
           Alpha: 1
           Show Axes: false
           Show Trail: false
-          Value: true
+      Mass Properties:
+        Inertia: false
+        Mass: false
       Name: RobotModel
       TF Prefix: ""
       Update Interval: 0
@@ -135,103 +242,1290 @@ Visualization Manager:
       Visual Enabled: true
     - Class: rviz_default_plugins/TF
       Enabled: true
-      Frame Timeout: 15
+      Frame Timeout: 1
       Frames:
         All Enabled: true
-        base_footprint:
-          Value: true
         base_link:
           Value: true
-        base_scan:
+        camera_front_color_frame:
           Value: true
-        caster_back_link:
+        camera_front_color_optical_frame:
           Value: true
-        imu_link:
+        camera_front_depth_frame:
           Value: true
-        odom:
+        camera_front_depth_optical_frame:
           Value: true
-        wheel_left_link:
+        camera_front_link:
           Value: true
-        wheel_right_link:
+        camera_rear_color_frame:
+          Value: true
+        camera_rear_color_optical_frame:
+          Value: true
+        camera_rear_depth_frame:
+          Value: true
+        camera_rear_depth_optical_frame:
+          Value: true
+        camera_rear_link:
+          Value: true
+        front_camera_body_0:
+          Value: true
+        front_camera_body_1:
+          Value: true
+        front_camera_body_10:
+          Value: true
+        front_camera_body_11:
+          Value: true
+        front_camera_body_12:
+          Value: true
+        front_camera_body_13:
+          Value: true
+        front_camera_body_14:
+          Value: true
+        front_camera_body_15:
+          Value: true
+        front_camera_body_16:
+          Value: true
+        front_camera_body_17:
+          Value: true
+        front_camera_body_18:
+          Value: true
+        front_camera_body_19:
+          Value: true
+        front_camera_body_2:
+          Value: true
+        front_camera_body_20:
+          Value: true
+        front_camera_body_21:
+          Value: true
+        front_camera_body_22:
+          Value: true
+        front_camera_body_23:
+          Value: true
+        front_camera_body_24:
+          Value: true
+        front_camera_body_25:
+          Value: true
+        front_camera_body_26:
+          Value: true
+        front_camera_body_27:
+          Value: true
+        front_camera_body_28:
+          Value: true
+        front_camera_body_29:
+          Value: true
+        front_camera_body_3:
+          Value: true
+        front_camera_body_30:
+          Value: true
+        front_camera_body_31:
+          Value: true
+        front_camera_body_32:
+          Value: true
+        front_camera_body_33:
+          Value: true
+        front_camera_body_34:
+          Value: true
+        front_camera_body_35:
+          Value: true
+        front_camera_body_36:
+          Value: true
+        front_camera_body_37:
+          Value: true
+        front_camera_body_38:
+          Value: true
+        front_camera_body_39:
+          Value: true
+        front_camera_body_4:
+          Value: true
+        front_camera_body_40:
+          Value: true
+        front_camera_body_41:
+          Value: true
+        front_camera_body_42:
+          Value: true
+        front_camera_body_43:
+          Value: true
+        front_camera_body_44:
+          Value: true
+        front_camera_body_45:
+          Value: true
+        front_camera_body_46:
+          Value: true
+        front_camera_body_47:
+          Value: true
+        front_camera_body_48:
+          Value: true
+        front_camera_body_49:
+          Value: true
+        front_camera_body_5:
+          Value: true
+        front_camera_body_50:
+          Value: true
+        front_camera_body_51:
+          Value: true
+        front_camera_body_52:
+          Value: true
+        front_camera_body_53:
+          Value: true
+        front_camera_body_54:
+          Value: true
+        front_camera_body_55:
+          Value: true
+        front_camera_body_56:
+          Value: true
+        front_camera_body_57:
+          Value: true
+        front_camera_body_58:
+          Value: true
+        front_camera_body_59:
+          Value: true
+        front_camera_body_6:
+          Value: true
+        front_camera_body_60:
+          Value: true
+        front_camera_body_61:
+          Value: true
+        front_camera_body_62:
+          Value: true
+        front_camera_body_63:
+          Value: true
+        front_camera_body_64:
+          Value: true
+        front_camera_body_65:
+          Value: true
+        front_camera_body_66:
+          Value: true
+        front_camera_body_67:
+          Value: true
+        front_camera_body_68:
+          Value: true
+        front_camera_body_69:
+          Value: true
+        front_camera_body_7:
+          Value: true
+        front_camera_body_70:
+          Value: true
+        front_camera_body_71:
+          Value: true
+        front_camera_body_72:
+          Value: true
+        front_camera_body_73:
+          Value: true
+        front_camera_body_74:
+          Value: true
+        front_camera_body_8:
+          Value: true
+        front_camera_body_9:
+          Value: true
+        front_camera_left_hand_0:
+          Value: true
+        front_camera_left_hand_1:
+          Value: true
+        front_camera_left_hand_10:
+          Value: true
+        front_camera_left_hand_11:
+          Value: true
+        front_camera_left_hand_12:
+          Value: true
+        front_camera_left_hand_13:
+          Value: true
+        front_camera_left_hand_14:
+          Value: true
+        front_camera_left_hand_15:
+          Value: true
+        front_camera_left_hand_16:
+          Value: true
+        front_camera_left_hand_17:
+          Value: true
+        front_camera_left_hand_18:
+          Value: true
+        front_camera_left_hand_19:
+          Value: true
+        front_camera_left_hand_2:
+          Value: true
+        front_camera_left_hand_20:
+          Value: true
+        front_camera_left_hand_3:
+          Value: true
+        front_camera_left_hand_4:
+          Value: true
+        front_camera_left_hand_5:
+          Value: true
+        front_camera_left_hand_6:
+          Value: true
+        front_camera_left_hand_7:
+          Value: true
+        front_camera_left_hand_8:
+          Value: true
+        front_camera_left_hand_9:
+          Value: true
+        front_camera_pose_0:
+          Value: true
+        front_camera_pose_1:
+          Value: true
+        front_camera_pose_10:
+          Value: true
+        front_camera_pose_11:
+          Value: true
+        front_camera_pose_12:
+          Value: true
+        front_camera_pose_13:
+          Value: true
+        front_camera_pose_14:
+          Value: true
+        front_camera_pose_15:
+          Value: true
+        front_camera_pose_16:
+          Value: true
+        front_camera_pose_17:
+          Value: true
+        front_camera_pose_18:
+          Value: true
+        front_camera_pose_19:
+          Value: true
+        front_camera_pose_2:
+          Value: true
+        front_camera_pose_20:
+          Value: true
+        front_camera_pose_21:
+          Value: true
+        front_camera_pose_22:
+          Value: true
+        front_camera_pose_23:
+          Value: true
+        front_camera_pose_24:
+          Value: true
+        front_camera_pose_25:
+          Value: true
+        front_camera_pose_26:
+          Value: true
+        front_camera_pose_27:
+          Value: true
+        front_camera_pose_28:
+          Value: true
+        front_camera_pose_29:
+          Value: true
+        front_camera_pose_3:
+          Value: true
+        front_camera_pose_30:
+          Value: true
+        front_camera_pose_31:
+          Value: true
+        front_camera_pose_32:
+          Value: true
+        front_camera_pose_4:
+          Value: true
+        front_camera_pose_5:
+          Value: true
+        front_camera_pose_6:
+          Value: true
+        front_camera_pose_7:
+          Value: true
+        front_camera_pose_8:
+          Value: true
+        front_camera_pose_9:
+          Value: true
+        front_camera_right_hand_0:
+          Value: true
+        front_camera_right_hand_1:
+          Value: true
+        front_camera_right_hand_10:
+          Value: true
+        front_camera_right_hand_11:
+          Value: true
+        front_camera_right_hand_12:
+          Value: true
+        front_camera_right_hand_13:
+          Value: true
+        front_camera_right_hand_14:
+          Value: true
+        front_camera_right_hand_15:
+          Value: true
+        front_camera_right_hand_16:
+          Value: true
+        front_camera_right_hand_17:
+          Value: true
+        front_camera_right_hand_18:
+          Value: true
+        front_camera_right_hand_19:
+          Value: true
+        front_camera_right_hand_2:
+          Value: true
+        front_camera_right_hand_20:
+          Value: true
+        front_camera_right_hand_3:
+          Value: true
+        front_camera_right_hand_4:
+          Value: true
+        front_camera_right_hand_5:
+          Value: true
+        front_camera_right_hand_6:
+          Value: true
+        front_camera_right_hand_7:
+          Value: true
+        front_camera_right_hand_8:
+          Value: true
+        front_camera_right_hand_9:
+          Value: true
+        laser:
+          Value: true
+        map:
+          Value: true
+        rear_camera_body_0:
+          Value: true
+        rear_camera_body_1:
+          Value: true
+        rear_camera_body_10:
+          Value: true
+        rear_camera_body_11:
+          Value: true
+        rear_camera_body_12:
+          Value: true
+        rear_camera_body_13:
+          Value: true
+        rear_camera_body_14:
+          Value: true
+        rear_camera_body_15:
+          Value: true
+        rear_camera_body_16:
+          Value: true
+        rear_camera_body_17:
+          Value: true
+        rear_camera_body_18:
+          Value: true
+        rear_camera_body_19:
+          Value: true
+        rear_camera_body_2:
+          Value: true
+        rear_camera_body_20:
+          Value: true
+        rear_camera_body_21:
+          Value: true
+        rear_camera_body_22:
+          Value: true
+        rear_camera_body_23:
+          Value: true
+        rear_camera_body_24:
+          Value: true
+        rear_camera_body_25:
+          Value: true
+        rear_camera_body_26:
+          Value: true
+        rear_camera_body_27:
+          Value: true
+        rear_camera_body_28:
+          Value: true
+        rear_camera_body_29:
+          Value: true
+        rear_camera_body_3:
+          Value: true
+        rear_camera_body_30:
+          Value: true
+        rear_camera_body_31:
+          Value: true
+        rear_camera_body_32:
+          Value: true
+        rear_camera_body_33:
+          Value: true
+        rear_camera_body_34:
+          Value: true
+        rear_camera_body_35:
+          Value: true
+        rear_camera_body_36:
+          Value: true
+        rear_camera_body_37:
+          Value: true
+        rear_camera_body_38:
+          Value: true
+        rear_camera_body_39:
+          Value: true
+        rear_camera_body_4:
+          Value: true
+        rear_camera_body_40:
+          Value: true
+        rear_camera_body_41:
+          Value: true
+        rear_camera_body_42:
+          Value: true
+        rear_camera_body_43:
+          Value: true
+        rear_camera_body_44:
+          Value: true
+        rear_camera_body_45:
+          Value: true
+        rear_camera_body_46:
+          Value: true
+        rear_camera_body_47:
+          Value: true
+        rear_camera_body_48:
+          Value: true
+        rear_camera_body_49:
+          Value: true
+        rear_camera_body_5:
+          Value: true
+        rear_camera_body_50:
+          Value: true
+        rear_camera_body_51:
+          Value: true
+        rear_camera_body_52:
+          Value: true
+        rear_camera_body_53:
+          Value: true
+        rear_camera_body_54:
+          Value: true
+        rear_camera_body_55:
+          Value: true
+        rear_camera_body_56:
+          Value: true
+        rear_camera_body_57:
+          Value: true
+        rear_camera_body_58:
+          Value: true
+        rear_camera_body_59:
+          Value: true
+        rear_camera_body_6:
+          Value: true
+        rear_camera_body_60:
+          Value: true
+        rear_camera_body_61:
+          Value: true
+        rear_camera_body_62:
+          Value: true
+        rear_camera_body_63:
+          Value: true
+        rear_camera_body_64:
+          Value: true
+        rear_camera_body_65:
+          Value: true
+        rear_camera_body_66:
+          Value: true
+        rear_camera_body_67:
+          Value: true
+        rear_camera_body_68:
+          Value: true
+        rear_camera_body_69:
+          Value: true
+        rear_camera_body_7:
+          Value: true
+        rear_camera_body_70:
+          Value: true
+        rear_camera_body_71:
+          Value: true
+        rear_camera_body_72:
+          Value: true
+        rear_camera_body_73:
+          Value: true
+        rear_camera_body_74:
+          Value: true
+        rear_camera_body_8:
+          Value: true
+        rear_camera_body_9:
+          Value: true
+        rear_camera_left_hand_0:
+          Value: true
+        rear_camera_left_hand_1:
+          Value: true
+        rear_camera_left_hand_10:
+          Value: true
+        rear_camera_left_hand_11:
+          Value: true
+        rear_camera_left_hand_12:
+          Value: true
+        rear_camera_left_hand_13:
+          Value: true
+        rear_camera_left_hand_14:
+          Value: true
+        rear_camera_left_hand_15:
+          Value: true
+        rear_camera_left_hand_16:
+          Value: true
+        rear_camera_left_hand_17:
+          Value: true
+        rear_camera_left_hand_18:
+          Value: true
+        rear_camera_left_hand_19:
+          Value: true
+        rear_camera_left_hand_2:
+          Value: true
+        rear_camera_left_hand_20:
+          Value: true
+        rear_camera_left_hand_3:
+          Value: true
+        rear_camera_left_hand_4:
+          Value: true
+        rear_camera_left_hand_5:
+          Value: true
+        rear_camera_left_hand_6:
+          Value: true
+        rear_camera_left_hand_7:
+          Value: true
+        rear_camera_left_hand_8:
+          Value: true
+        rear_camera_left_hand_9:
+          Value: true
+        rear_camera_pose_0:
+          Value: true
+        rear_camera_pose_1:
+          Value: true
+        rear_camera_pose_10:
+          Value: true
+        rear_camera_pose_11:
+          Value: true
+        rear_camera_pose_12:
+          Value: true
+        rear_camera_pose_13:
+          Value: true
+        rear_camera_pose_14:
+          Value: true
+        rear_camera_pose_15:
+          Value: true
+        rear_camera_pose_16:
+          Value: true
+        rear_camera_pose_17:
+          Value: true
+        rear_camera_pose_18:
+          Value: true
+        rear_camera_pose_19:
+          Value: true
+        rear_camera_pose_2:
+          Value: true
+        rear_camera_pose_20:
+          Value: true
+        rear_camera_pose_21:
+          Value: true
+        rear_camera_pose_22:
+          Value: true
+        rear_camera_pose_23:
+          Value: true
+        rear_camera_pose_24:
+          Value: true
+        rear_camera_pose_25:
+          Value: true
+        rear_camera_pose_26:
+          Value: true
+        rear_camera_pose_27:
+          Value: true
+        rear_camera_pose_28:
+          Value: true
+        rear_camera_pose_29:
+          Value: true
+        rear_camera_pose_3:
+          Value: true
+        rear_camera_pose_30:
+          Value: true
+        rear_camera_pose_31:
+          Value: true
+        rear_camera_pose_32:
+          Value: true
+        rear_camera_pose_4:
+          Value: true
+        rear_camera_pose_5:
+          Value: true
+        rear_camera_pose_6:
+          Value: true
+        rear_camera_pose_7:
+          Value: true
+        rear_camera_pose_8:
+          Value: true
+        rear_camera_pose_9:
+          Value: true
+        rear_camera_right_hand_0:
+          Value: true
+        rear_camera_right_hand_1:
+          Value: true
+        rear_camera_right_hand_10:
+          Value: true
+        rear_camera_right_hand_11:
+          Value: true
+        rear_camera_right_hand_12:
+          Value: true
+        rear_camera_right_hand_13:
+          Value: true
+        rear_camera_right_hand_14:
+          Value: true
+        rear_camera_right_hand_15:
+          Value: true
+        rear_camera_right_hand_16:
+          Value: true
+        rear_camera_right_hand_17:
+          Value: true
+        rear_camera_right_hand_18:
+          Value: true
+        rear_camera_right_hand_19:
+          Value: true
+        rear_camera_right_hand_2:
+          Value: true
+        rear_camera_right_hand_20:
+          Value: true
+        rear_camera_right_hand_3:
+          Value: true
+        rear_camera_right_hand_4:
+          Value: true
+        rear_camera_right_hand_5:
+          Value: true
+        rear_camera_right_hand_6:
+          Value: true
+        rear_camera_right_hand_7:
+          Value: true
+        rear_camera_right_hand_8:
+          Value: true
+        rear_camera_right_hand_9:
           Value: true
       Marker Scale: 1
       Name: TF
       Show Arrows: true
       Show Axes: true
-      Show Names: true
+      Show Names: false
       Tree:
-        odom:
-          base_footprint:
-            base_link:
-              base_scan:
-                {}
-              caster_back_link:
-                {}
-              imu_link:
-                {}
-              wheel_left_link:
-                {}
-              wheel_right_link:
-                {}
+        map:
+          base_link:
+            camera_front_link:
+              camera_front_color_frame:
+                camera_front_color_optical_frame:
+                  {}
+              camera_front_depth_frame:
+                camera_front_depth_optical_frame:
+                  front_camera_body_0:
+                    {}
+                  front_camera_body_1:
+                    {}
+                  front_camera_body_10:
+                    {}
+                  front_camera_body_11:
+                    {}
+                  front_camera_body_12:
+                    {}
+                  front_camera_body_13:
+                    {}
+                  front_camera_body_14:
+                    {}
+                  front_camera_body_15:
+                    {}
+                  front_camera_body_16:
+                    {}
+                  front_camera_body_17:
+                    {}
+                  front_camera_body_18:
+                    {}
+                  front_camera_body_19:
+                    {}
+                  front_camera_body_2:
+                    {}
+                  front_camera_body_20:
+                    {}
+                  front_camera_body_21:
+                    {}
+                  front_camera_body_22:
+                    {}
+                  front_camera_body_23:
+                    {}
+                  front_camera_body_24:
+                    {}
+                  front_camera_body_25:
+                    {}
+                  front_camera_body_26:
+                    {}
+                  front_camera_body_27:
+                    {}
+                  front_camera_body_28:
+                    {}
+                  front_camera_body_29:
+                    {}
+                  front_camera_body_3:
+                    {}
+                  front_camera_body_30:
+                    {}
+                  front_camera_body_31:
+                    {}
+                  front_camera_body_32:
+                    {}
+                  front_camera_body_33:
+                    {}
+                  front_camera_body_34:
+                    {}
+                  front_camera_body_35:
+                    {}
+                  front_camera_body_36:
+                    {}
+                  front_camera_body_37:
+                    {}
+                  front_camera_body_38:
+                    {}
+                  front_camera_body_39:
+                    {}
+                  front_camera_body_4:
+                    {}
+                  front_camera_body_40:
+                    {}
+                  front_camera_body_41:
+                    {}
+                  front_camera_body_42:
+                    {}
+                  front_camera_body_43:
+                    {}
+                  front_camera_body_44:
+                    {}
+                  front_camera_body_45:
+                    {}
+                  front_camera_body_46:
+                    {}
+                  front_camera_body_47:
+                    {}
+                  front_camera_body_48:
+                    {}
+                  front_camera_body_49:
+                    {}
+                  front_camera_body_5:
+                    {}
+                  front_camera_body_50:
+                    {}
+                  front_camera_body_51:
+                    {}
+                  front_camera_body_52:
+                    {}
+                  front_camera_body_53:
+                    {}
+                  front_camera_body_54:
+                    {}
+                  front_camera_body_55:
+                    {}
+                  front_camera_body_56:
+                    {}
+                  front_camera_body_57:
+                    {}
+                  front_camera_body_58:
+                    {}
+                  front_camera_body_59:
+                    {}
+                  front_camera_body_6:
+                    {}
+                  front_camera_body_60:
+                    {}
+                  front_camera_body_61:
+                    {}
+                  front_camera_body_62:
+                    {}
+                  front_camera_body_63:
+                    {}
+                  front_camera_body_64:
+                    {}
+                  front_camera_body_65:
+                    {}
+                  front_camera_body_66:
+                    {}
+                  front_camera_body_67:
+                    {}
+                  front_camera_body_68:
+                    {}
+                  front_camera_body_69:
+                    {}
+                  front_camera_body_7:
+                    {}
+                  front_camera_body_70:
+                    {}
+                  front_camera_body_71:
+                    {}
+                  front_camera_body_72:
+                    {}
+                  front_camera_body_73:
+                    {}
+                  front_camera_body_74:
+                    {}
+                  front_camera_body_8:
+                    {}
+                  front_camera_body_9:
+                    {}
+                  front_camera_left_hand_0:
+                    {}
+                  front_camera_left_hand_1:
+                    {}
+                  front_camera_left_hand_10:
+                    {}
+                  front_camera_left_hand_11:
+                    {}
+                  front_camera_left_hand_12:
+                    {}
+                  front_camera_left_hand_13:
+                    {}
+                  front_camera_left_hand_14:
+                    {}
+                  front_camera_left_hand_15:
+                    {}
+                  front_camera_left_hand_16:
+                    {}
+                  front_camera_left_hand_17:
+                    {}
+                  front_camera_left_hand_18:
+                    {}
+                  front_camera_left_hand_19:
+                    {}
+                  front_camera_left_hand_2:
+                    {}
+                  front_camera_left_hand_20:
+                    {}
+                  front_camera_left_hand_3:
+                    {}
+                  front_camera_left_hand_4:
+                    {}
+                  front_camera_left_hand_5:
+                    {}
+                  front_camera_left_hand_6:
+                    {}
+                  front_camera_left_hand_7:
+                    {}
+                  front_camera_left_hand_8:
+                    {}
+                  front_camera_left_hand_9:
+                    {}
+                  front_camera_pose_0:
+                    {}
+                  front_camera_pose_1:
+                    {}
+                  front_camera_pose_10:
+                    {}
+                  front_camera_pose_11:
+                    {}
+                  front_camera_pose_12:
+                    {}
+                  front_camera_pose_13:
+                    {}
+                  front_camera_pose_14:
+                    {}
+                  front_camera_pose_15:
+                    {}
+                  front_camera_pose_16:
+                    {}
+                  front_camera_pose_17:
+                    {}
+                  front_camera_pose_18:
+                    {}
+                  front_camera_pose_19:
+                    {}
+                  front_camera_pose_2:
+                    {}
+                  front_camera_pose_20:
+                    {}
+                  front_camera_pose_21:
+                    {}
+                  front_camera_pose_22:
+                    {}
+                  front_camera_pose_23:
+                    {}
+                  front_camera_pose_24:
+                    {}
+                  front_camera_pose_25:
+                    {}
+                  front_camera_pose_26:
+                    {}
+                  front_camera_pose_27:
+                    {}
+                  front_camera_pose_28:
+                    {}
+                  front_camera_pose_29:
+                    {}
+                  front_camera_pose_3:
+                    {}
+                  front_camera_pose_30:
+                    {}
+                  front_camera_pose_31:
+                    {}
+                  front_camera_pose_32:
+                    {}
+                  front_camera_pose_4:
+                    {}
+                  front_camera_pose_5:
+                    {}
+                  front_camera_pose_6:
+                    {}
+                  front_camera_pose_7:
+                    {}
+                  front_camera_pose_8:
+                    {}
+                  front_camera_pose_9:
+                    {}
+                  front_camera_right_hand_0:
+                    {}
+                  front_camera_right_hand_1:
+                    {}
+                  front_camera_right_hand_10:
+                    {}
+                  front_camera_right_hand_11:
+                    {}
+                  front_camera_right_hand_12:
+                    {}
+                  front_camera_right_hand_13:
+                    {}
+                  front_camera_right_hand_14:
+                    {}
+                  front_camera_right_hand_15:
+                    {}
+                  front_camera_right_hand_16:
+                    {}
+                  front_camera_right_hand_17:
+                    {}
+                  front_camera_right_hand_18:
+                    {}
+                  front_camera_right_hand_19:
+                    {}
+                  front_camera_right_hand_2:
+                    {}
+                  front_camera_right_hand_20:
+                    {}
+                  front_camera_right_hand_3:
+                    {}
+                  front_camera_right_hand_4:
+                    {}
+                  front_camera_right_hand_5:
+                    {}
+                  front_camera_right_hand_6:
+                    {}
+                  front_camera_right_hand_7:
+                    {}
+                  front_camera_right_hand_8:
+                    {}
+                  front_camera_right_hand_9:
+                    {}
+            camera_rear_link:
+              camera_rear_color_frame:
+                camera_rear_color_optical_frame:
+                  {}
+              camera_rear_depth_frame:
+                camera_rear_depth_optical_frame:
+                  rear_camera_body_0:
+                    {}
+                  rear_camera_body_1:
+                    {}
+                  rear_camera_body_10:
+                    {}
+                  rear_camera_body_11:
+                    {}
+                  rear_camera_body_12:
+                    {}
+                  rear_camera_body_13:
+                    {}
+                  rear_camera_body_14:
+                    {}
+                  rear_camera_body_15:
+                    {}
+                  rear_camera_body_16:
+                    {}
+                  rear_camera_body_17:
+                    {}
+                  rear_camera_body_18:
+                    {}
+                  rear_camera_body_19:
+                    {}
+                  rear_camera_body_2:
+                    {}
+                  rear_camera_body_20:
+                    {}
+                  rear_camera_body_21:
+                    {}
+                  rear_camera_body_22:
+                    {}
+                  rear_camera_body_23:
+                    {}
+                  rear_camera_body_24:
+                    {}
+                  rear_camera_body_25:
+                    {}
+                  rear_camera_body_26:
+                    {}
+                  rear_camera_body_27:
+                    {}
+                  rear_camera_body_28:
+                    {}
+                  rear_camera_body_29:
+                    {}
+                  rear_camera_body_3:
+                    {}
+                  rear_camera_body_30:
+                    {}
+                  rear_camera_body_31:
+                    {}
+                  rear_camera_body_32:
+                    {}
+                  rear_camera_body_33:
+                    {}
+                  rear_camera_body_34:
+                    {}
+                  rear_camera_body_35:
+                    {}
+                  rear_camera_body_36:
+                    {}
+                  rear_camera_body_37:
+                    {}
+                  rear_camera_body_38:
+                    {}
+                  rear_camera_body_39:
+                    {}
+                  rear_camera_body_4:
+                    {}
+                  rear_camera_body_40:
+                    {}
+                  rear_camera_body_41:
+                    {}
+                  rear_camera_body_42:
+                    {}
+                  rear_camera_body_43:
+                    {}
+                  rear_camera_body_44:
+                    {}
+                  rear_camera_body_45:
+                    {}
+                  rear_camera_body_46:
+                    {}
+                  rear_camera_body_47:
+                    {}
+                  rear_camera_body_48:
+                    {}
+                  rear_camera_body_49:
+                    {}
+                  rear_camera_body_5:
+                    {}
+                  rear_camera_body_50:
+                    {}
+                  rear_camera_body_51:
+                    {}
+                  rear_camera_body_52:
+                    {}
+                  rear_camera_body_53:
+                    {}
+                  rear_camera_body_54:
+                    {}
+                  rear_camera_body_55:
+                    {}
+                  rear_camera_body_56:
+                    {}
+                  rear_camera_body_57:
+                    {}
+                  rear_camera_body_58:
+                    {}
+                  rear_camera_body_59:
+                    {}
+                  rear_camera_body_6:
+                    {}
+                  rear_camera_body_60:
+                    {}
+                  rear_camera_body_61:
+                    {}
+                  rear_camera_body_62:
+                    {}
+                  rear_camera_body_63:
+                    {}
+                  rear_camera_body_64:
+                    {}
+                  rear_camera_body_65:
+                    {}
+                  rear_camera_body_66:
+                    {}
+                  rear_camera_body_67:
+                    {}
+                  rear_camera_body_68:
+                    {}
+                  rear_camera_body_69:
+                    {}
+                  rear_camera_body_7:
+                    {}
+                  rear_camera_body_70:
+                    {}
+                  rear_camera_body_71:
+                    {}
+                  rear_camera_body_72:
+                    {}
+                  rear_camera_body_73:
+                    {}
+                  rear_camera_body_74:
+                    {}
+                  rear_camera_body_8:
+                    {}
+                  rear_camera_body_9:
+                    {}
+                  rear_camera_left_hand_0:
+                    {}
+                  rear_camera_left_hand_1:
+                    {}
+                  rear_camera_left_hand_10:
+                    {}
+                  rear_camera_left_hand_11:
+                    {}
+                  rear_camera_left_hand_12:
+                    {}
+                  rear_camera_left_hand_13:
+                    {}
+                  rear_camera_left_hand_14:
+                    {}
+                  rear_camera_left_hand_15:
+                    {}
+                  rear_camera_left_hand_16:
+                    {}
+                  rear_camera_left_hand_17:
+                    {}
+                  rear_camera_left_hand_18:
+                    {}
+                  rear_camera_left_hand_19:
+                    {}
+                  rear_camera_left_hand_2:
+                    {}
+                  rear_camera_left_hand_20:
+                    {}
+                  rear_camera_left_hand_3:
+                    {}
+                  rear_camera_left_hand_4:
+                    {}
+                  rear_camera_left_hand_5:
+                    {}
+                  rear_camera_left_hand_6:
+                    {}
+                  rear_camera_left_hand_7:
+                    {}
+                  rear_camera_left_hand_8:
+                    {}
+                  rear_camera_left_hand_9:
+                    {}
+                  rear_camera_pose_0:
+                    {}
+                  rear_camera_pose_1:
+                    {}
+                  rear_camera_pose_10:
+                    {}
+                  rear_camera_pose_11:
+                    {}
+                  rear_camera_pose_12:
+                    {}
+                  rear_camera_pose_13:
+                    {}
+                  rear_camera_pose_14:
+                    {}
+                  rear_camera_pose_15:
+                    {}
+                  rear_camera_pose_16:
+                    {}
+                  rear_camera_pose_17:
+                    {}
+                  rear_camera_pose_18:
+                    {}
+                  rear_camera_pose_19:
+                    {}
+                  rear_camera_pose_2:
+                    {}
+                  rear_camera_pose_20:
+                    {}
+                  rear_camera_pose_21:
+                    {}
+                  rear_camera_pose_22:
+                    {}
+                  rear_camera_pose_23:
+                    {}
+                  rear_camera_pose_24:
+                    {}
+                  rear_camera_pose_25:
+                    {}
+                  rear_camera_pose_26:
+                    {}
+                  rear_camera_pose_27:
+                    {}
+                  rear_camera_pose_28:
+                    {}
+                  rear_camera_pose_29:
+                    {}
+                  rear_camera_pose_3:
+                    {}
+                  rear_camera_pose_30:
+                    {}
+                  rear_camera_pose_31:
+                    {}
+                  rear_camera_pose_32:
+                    {}
+                  rear_camera_pose_4:
+                    {}
+                  rear_camera_pose_5:
+                    {}
+                  rear_camera_pose_6:
+                    {}
+                  rear_camera_pose_7:
+                    {}
+                  rear_camera_pose_8:
+                    {}
+                  rear_camera_pose_9:
+                    {}
+                  rear_camera_right_hand_0:
+                    {}
+                  rear_camera_right_hand_1:
+                    {}
+                  rear_camera_right_hand_10:
+                    {}
+                  rear_camera_right_hand_11:
+                    {}
+                  rear_camera_right_hand_12:
+                    {}
+                  rear_camera_right_hand_13:
+                    {}
+                  rear_camera_right_hand_14:
+                    {}
+                  rear_camera_right_hand_15:
+                    {}
+                  rear_camera_right_hand_16:
+                    {}
+                  rear_camera_right_hand_17:
+                    {}
+                  rear_camera_right_hand_18:
+                    {}
+                  rear_camera_right_hand_19:
+                    {}
+                  rear_camera_right_hand_2:
+                    {}
+                  rear_camera_right_hand_20:
+                    {}
+                  rear_camera_right_hand_3:
+                    {}
+                  rear_camera_right_hand_4:
+                    {}
+                  rear_camera_right_hand_5:
+                    {}
+                  rear_camera_right_hand_6:
+                    {}
+                  rear_camera_right_hand_7:
+                    {}
+                  rear_camera_right_hand_8:
+                    {}
+                  rear_camera_right_hand_9:
+                    {}
+            laser:
+              {}
       Update Interval: 0
-      Value: true
-    - Angle Tolerance: 0.10000000149011612
-      Class: rviz_default_plugins/Odometry
-      Covariance:
-        Orientation:
-          Alpha: 0.5
-          Color: 255; 255; 127
-          Color Style: Unique
-          Frame: Local
-          Offset: 1
-          Scale: 1
-          Value: true
-        Position:
-          Alpha: 0.30000001192092896
-          Color: 204; 51; 204
-          Scale: 1
-          Value: true
-        Value: false
-      Enabled: true
-      Keep: 100
-      Name: Odometry
-      Position Tolerance: 0.10000000149011612
-      Shape:
-        Alpha: 1
-        Axes Length: 1
-        Axes Radius: 0.10000000149011612
-        Color: 255; 25; 0
-        Head Length: 0.30000001192092896
-        Head Radius: 0.10000000149011612
-        Shaft Length: 1
-        Shaft Radius: 0.05000000074505806
-        Value: Arrow
-      Topic:
-        Depth: 5
-        Durability Policy: Volatile
-        History Policy: Keep Last
-        Reliability Policy: Reliable
-        Value: /odom
       Value: true
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48
-    Fixed Frame: odom
+    Fixed Frame: map
     Frame Rate: 30
   Name: root
   Tools:
+    - Class: rviz_default_plugins/Interact
+      Hide Inactive Objects: true
     - Class: rviz_default_plugins/MoveCamera
     - Class: rviz_default_plugins/Select
     - Class: rviz_default_plugins/FocusCamera
     - Class: rviz_default_plugins/Measure
       Line color: 128; 128; 0
+    - Class: rviz_default_plugins/SetInitialPose
+      Covariance x: 0.25
+      Covariance y: 0.25
+      Covariance yaw: 0.06853891909122467
+      Topic:
+        Depth: 5
+        Durability Policy: Volatile
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: /initialpose
     - Class: rviz_default_plugins/SetGoal
       Topic:
         Depth: 5
         Durability Policy: Volatile
         History Policy: Keep Last
         Reliability Policy: Reliable
-        Value: /move_base_simple/goal
+        Value: /goal_pose
     - Class: rviz_default_plugins/PublishPoint
       Single click: true
       Topic:
@@ -247,39 +1541,41 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz_default_plugins/Orbit
-      Distance: 7.944110870361328
+      Distance: 14.423686027526855
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: -0.09679540991783142
-        Y: -0.015412976033985615
-        Z: -0.08031613379716873
+        X: 2.602015972137451
+        Y: -0.045327670872211456
+        Z: 1.029198169708252
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 1.5697963237762451
+      Pitch: 0.6753981113433838
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 3.1454057693481445
+      Yaw: 4.740397930145264
     Saved: ~
 Window Geometry:
   Displays:
     collapsed: false
-  Height: 994
+  Height: 1265
   Hide Left Dock: false
   Hide Right Dock: true
-  QMainWindow State: 000000ff00000000fd0000000400000000000001b100000388fc0200000008fb0000001200530065006c0065006300740069006f006e00000001e10000009b0000005c00fffffffb0000001e0054006f006f006c002000500072006f007000650072007400690065007302000001ed000001df00000185000000a3fb000000120056006900650077007300200054006f006f02000001df000002110000018500000122fb000000200054006f006f006c002000500072006f0070006500720074006900650073003203000002880000011d000002210000017afb000000100044006900730070006c006100790073010000003d00000388000000c900fffffffb0000002000730065006c0065006300740069006f006e00200062007500660066006500720200000138000000aa0000023a00000294fb00000014005700690064006500530074006500720065006f02000000e6000000d2000003ee0000030bfb0000000c004b0069006e0065006300740200000186000001060000030c00000261000000010000010f000002ebfc0200000003fb0000001e0054006f006f006c002000500072006f00700065007200740069006500730100000041000000780000000000000000fb0000000a005600690065007700730000000043000002eb000000a400fffffffb0000001200530065006c0065006300740069006f006e010000025a000000b200000000000000000000000200000490000000a9fc0100000001fb0000000a00560069006500770073030000004e00000080000002e10000019700000003000004420000003efc0100000002fb0000000800540069006d00650100000000000004420000000000000000fb0000000800540069006d00650100000000000004500000000000000000000003940000038800000004000000040000000800000008fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
+  QMainWindow State: 000000ff00000000fd00000004000000000000015600000453fc0200000008fb0000001200530065006c0065006300740069006f006e00000001e10000009b0000005c00fffffffb0000001e0054006f006f006c002000500072006f007000650072007400690065007302000001ed000001df00000185000000a3fb000000120056006900650077007300200054006f006f02000001df000002110000018500000122fb000000200054006f006f006c002000500072006f0070006500720074006900650073003203000002880000011d000002210000017afb000000100044006900730070006c006100790073010000003d00000453000000c900fffffffb0000002000730065006c0065006300740069006f006e00200062007500660066006500720200000138000000aa0000023a00000294fb00000014005700690064006500530074006500720065006f02000000e6000000d2000003ee0000030bfb0000000c004b0069006e0065006300740200000186000001060000030c00000261000000010000010f00000453fc0200000003fb0000001e0054006f006f006c002000500072006f00700065007200740069006500730100000041000000780000000000000000fb0000000a00560069006500770073000000003d00000453000000a400fffffffb0000001200530065006c0065006300740069006f006e010000025a000000b200000000000000000000000200000490000000a9fc0100000001fb0000000a00560069006500770073030000004e00000080000002e100000197000000030000062d0000003efc0100000002fb0000000800540069006d006501000000000000062d000002fb00fffffffb0000000800540069006d00650100000000000004500000000000000000000004d10000045300000004000000040000000800000008fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
   Selection:
+    collapsed: false
+  Time:
     collapsed: false
   Tool Properties:
     collapsed: false
   Views:
     collapsed: true
-  Width: 1355
-  X: 412
-  Y: 29
+  Width: 1581
+  X: 60
+  Y: 60
