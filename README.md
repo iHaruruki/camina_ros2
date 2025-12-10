@@ -13,17 +13,20 @@
 
 ### Dependent packages
 ```bash
+# NUC34 & 35
 sudo apt install ros-$ROS_DISTRO-urdf-tutorial ros-$ROS_DISTRO-rqt-tf-tree ros-$ROS_DISTRO-xacro ros-$ROS_DISTRO-joint-state-publisher ros-$ROS_DISTRO-joint-state-publisher-gui
 ```
 
 ### Clone this package
 ```bash
+# NUC34 & 35
 cd ~/ros2_ws/src
 git clone https://github.com/iHaruruki/camina_ros2.git
 ```
 
 ### Build
 ```bash
+# NUC34 & 35
 cd ~/ros2_ws
 colcon build --symlink-install --packages-select camina_ros2
 source install/setup.bash
@@ -32,16 +35,16 @@ source install/setup.bash
 ## 🎮 How to use
 ### Checking inter-device communication connections / デバイス間通信の接続確認
 ```bash
-# NUC 38
+# NUC 35
 ros2 run demo_nodes_cpp talker
 ```
 ```bash
-# NUC 35
+# NUC 34
 ros2 run demo_nodes_cpp listener
 ```
 Result / 実行結果
 ```bash
-ros2 run demo_nodes_cpp listener
+$ ros2 run demo_nodes_cpp listener
 [INFO] [1765264820.324285384] [listener]: I heard: [Hello World: 1]
 [INFO] [1765264821.324176160] [listener]: I heard: [Hello World: 2]
 [INFO] [1765264822.324076114] [listener]: I heard: [Hello World: 3]
@@ -51,6 +54,8 @@ ros2 run demo_nodes_cpp listener
 > [!NOTE]
 > [ROS_DOMAIN_ID](https://docs.ros.org/en/humble/Concepts/Intermediate/About-Domain-ID.html)  
 > [Configuring environment](https://docs.ros.org/en/humble/Tutorials/Beginner-CLI-Tools/Configuring-ROS2-Environment.html)
+> [同一ネットワーク内で複数人がROS2を使用する場合
+](https://qiita.com/NeK/items/6163d5a307665a3c9c1c)
 
 ### Run `robot_state_publisher`
 ```bash
@@ -66,7 +71,7 @@ ros2 launch astra_camera astra_pro.launch.xml camera_name:=camera_front publish_
 ```
 rear camera
 ```bash
-# NUC38
+# NUC34
 ros2 launch astra_camera astra_pro.launch.xml camera_name:=camera_rear publish_tf:=false
 ```
 
@@ -84,7 +89,7 @@ ros2 run camina_ros2 front_ramera_node
 ```
 Mediapipe for rear camera
 ```bash
-# NUC38
+# NUC34
 ros2 run camina_ros2 rear_ramera_node
 ```
 
