@@ -53,7 +53,7 @@ $ ros2 run demo_nodes_cpp listener
 ```
 > [!NOTE]
 > [ROS_DOMAIN_ID](https://docs.ros.org/en/humble/Concepts/Intermediate/About-Domain-ID.html)  
-> [Configuring environment](https://docs.ros.org/en/humble/Tutorials/Beginner-CLI-Tools/Configuring-ROS2-Environment.html)
+> [Configuring environment](https://docs.ros.org/en/humble/Tutorials/Beginner-CLI-Tools/Configuring-ROS2-Environment.html)  
 > [同一ネットワーク内で複数人がROS2を使用する場合
 ](https://qiita.com/NeK/items/6163d5a307665a3c9c1c)
 
