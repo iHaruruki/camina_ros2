@@ -74,6 +74,10 @@ rear camera
 # NUC34
 ros2 launch astra_camera astra_pro.launch.xml camera_name:=camera_rear publish_tf:=false
 ```
+rviz & tf
+```bash
+ros2 launch camina_ros2 camina.launch.py
+```
 
 ### Run LiDAR
 ```bash
