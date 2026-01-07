@@ -73,8 +73,8 @@ $ ros2 run demo_nodes_cpp listener
 > [Configuring environment](https://docs.ros.org/en/humble/Tutorials/Beginner-CLI-Tools/Configuring-ROS2-Environment.html)  
 > [同一ネットワーク内で複数人がROS2を使用する場合](https://qiita.com/NeK/items/6163d5a307665a3c9c1c)
 
-Stop ros2 run demo_nodes_cpp talker and ros2 run demo_nodes_cpp listener with `Ctrl + c`  
-`Ctrl + c`でros2 run demo_nodes_cpp talkerとros2 run demo_nodes_cpp listenerを停止する．
+Stop `ros2 run demo_nodes_cpp talker` and `ros2 run demo_nodes_cpp listener` with `Ctrl + c`  
+`Ctrl + c`で`ros2 run demo_nodes_cpp talker`と`ros2 run demo_nodes_cpp listener`を停止する．
 
 ### Run Camera
 front camera
