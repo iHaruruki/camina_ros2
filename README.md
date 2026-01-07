@@ -34,9 +34,19 @@ source install/setup.bash
 
 ## 🎮 How to use
 ### Checking inter-device communication connections / デバイス間通信の接続確認
+Set `ROS_DOMAIN_ID`
+```bash
+# NUC 35
+export ROS_DOMAIN_ID=40
+```
 ```bash
 # NUC 35
 ros2 run demo_nodes_cpp talker
+```
+Set `ROS_DOMAIN_ID`
+```bash
+# NUC 34
+export ROS_DOMAIN_ID=40
 ```
 ```bash
 # NUC 34
@@ -52,10 +62,13 @@ $ ros2 run demo_nodes_cpp listener
 [INFO] [1765264824.324185182] [listener]: I heard: [Hello World: 5]
 ```
 > [!NOTE]
+> The `ROS_DOMAIN_ID` is an environment variable in ROS 2 that is used to separate multiple ROS 2 processes running on the same network.  
+> `ROS_DOMAIN_ID` は，同じネットワーク上で実行されている複数の ROS 2 プロセスを分離するために使用される ROS 2 の環境変数です．
+> Nodes with the same `ROS_DOMAIN_ID` can communicate with each other, but are not able to communicate to nodes with a different `ROS_DOMAIN_ID`.
+> 同じ `ROS_DOMAIN_ID` を持つノードは互いに通信できますが，異なる `ROS_DOMAIN_ID` を持つノードとは通信できません．
 > [ROS_DOMAIN_ID](https://docs.ros.org/en/humble/Concepts/Intermediate/About-Domain-ID.html)  
 > [Configuring environment](https://docs.ros.org/en/humble/Tutorials/Beginner-CLI-Tools/Configuring-ROS2-Environment.html)  
-> [同一ネットワーク内で複数人がROS2を使用する場合
-](https://qiita.com/NeK/items/6163d5a307665a3c9c1c)
+> [同一ネットワーク内で複数人がROS2を使用する場合](https://qiita.com/NeK/items/6163d5a307665a3c9c1c)
 
 Stop ros2 run demo_nodes_cpp talker and ros2 run demo_nodes_cpp listener with `Ctrl + c`  
 `Ctrl + c`でros2 run demo_nodes_cpp talkerとros2 run demo_nodes_cpp listenerを停止する．
@@ -124,6 +137,12 @@ ros2 run tf2_ros tf2_echo base_link camera_front_link
 ROS2
 - [ROS 2-Humble](https://docs.ros.org/en/humble/index.html)
 - [ROS 2 Installation](https://docs.ros.org/en/humble/Installation/Ubuntu-Install-Debs.html)
+
+ROS_DOMAIN_iD
+- [Set up the ROS_DOMAIN_ID in ROS 2](https://docs.pal-robotics.com/25.01/development/ros-domain-id.html)
+- [ROS_DOMAIN_ID](https://docs.ros.org/en/humble/Concepts/Intermediate/About-Domain-ID.html)  
+- [Configuring environment](https://docs.ros.org/en/humble/Tutorials/Beginner-CLI-Tools/Configuring-ROS2-Environment.html)  
+- [同一ネットワーク内で複数人がROS2を使用する場合](https://qiita.com/NeK/items/6163d5a307665a3c9c1c)
 
 MediaPipe Holistic
 - [MediaPipe](https://chuoling.github.io/mediapipe/)
