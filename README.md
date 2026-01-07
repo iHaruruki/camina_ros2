@@ -57,11 +57,8 @@ $ ros2 run demo_nodes_cpp listener
 > [同一ネットワーク内で複数人がROS2を使用する場合
 ](https://qiita.com/NeK/items/6163d5a307665a3c9c1c)
 
-### Run `robot_state_publisher`
-```bash
-# NUC35
-ros2 launch camina_ros2 camina.launch.py
-```
+Stop ros2 run demo_nodes_cpp talker and ros2 run demo_nodes_cpp listener with `Ctrl + c`  
+`Ctrl + c`でros2 run demo_nodes_cpp talkerとros2 run demo_nodes_cpp listenerを停止する．
 
 ### Run Camera
 front camera
@@ -76,6 +73,7 @@ ros2 launch astra_camera astra_pro.launch.xml camera_name:=camera_rear publish_t
 ```
 rviz & tf
 ```bash
+# NUC35
 ros2 launch camina_ros2 camina.launch.py
 ```
 
