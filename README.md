@@ -66,9 +66,9 @@ $ ros2 run demo_nodes_cpp listener
 ```
 > [!NOTE]
 > The `ROS_DOMAIN_ID` is an environment variable in ROS 2 that is used to separate multiple ROS 2 processes running on the same network.  
-> `ROS_DOMAIN_ID` は，同じネットワーク上で実行されている複数の ROS 2 プロセスを分離するために使用される ROS 2 の環境変数です．
-> Nodes with the same `ROS_DOMAIN_ID` can communicate with each other, but are not able to communicate to nodes with a different `ROS_DOMAIN_ID`.
-> 同じ `ROS_DOMAIN_ID` を持つノードは互いに通信できますが，異なる `ROS_DOMAIN_ID` を持つノードとは通信できません．
+> `ROS_DOMAIN_ID` は，同じネットワーク上で実行されている複数の ROS 2 プロセスを分離するために使用される ROS 2 の環境変数です．  
+> Nodes with the same `ROS_DOMAIN_ID` can communicate with each other, but are not able to communicate to nodes with a different `ROS_DOMAIN_ID`.  
+> 同じ `ROS_DOMAIN_ID` を持つノードは互いに通信できますが，異なる `ROS_DOMAIN_ID` を持つノードとは通信できません．  
 > [ROS_DOMAIN_ID](https://docs.ros.org/en/humble/Concepts/Intermediate/About-Domain-ID.html)  
 > [Configuring environment](https://docs.ros.org/en/humble/Tutorials/Beginner-CLI-Tools/Configuring-ROS2-Environment.html)  
 > [同一ネットワーク内で複数人がROS2を使用する場合](https://qiita.com/NeK/items/6163d5a307665a3c9c1c)
