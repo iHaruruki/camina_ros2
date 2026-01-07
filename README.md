@@ -138,6 +138,25 @@ MediaPipe Pose
 URDF
 - [URDF](https://docs.ros.org/en/humble/Tutorials/Intermediate/URDF/URDF-Main.html)
 
+Cameras and Calibration
+- [Cameras and CalibrationGetting Setup](https://industrial-training-master.readthedocs.io/en/latest/_source/session9/Cameras-and-Calibration.html)
+- [robot_cal_tools](https://github.com/Jmeyer1292/robot_cal_tools.git)
+
+ROS 2 message_filters
+- [message_filters](https://docs.ros.org/en/rolling/p/message_filters/doc/index.html)
+- [ROS 2（rolling）のPythonチュートリアル](https://docs.ros.org/en/rolling/p/message_filters/doc/Tutorials/Approximate-Synchronizer-Python.html?utm_source=chatgpt.com)
+
+CV Bridge
+- [Converting between ROS images and OpenCV images](https://wiki.ros.org/cv_bridge/Tutorials/ConvertingBetweenROSImagesAndOpenCVImagesPython?utm_source=chatgpt.com)
+- [image_pipeline](https://docs.ros.org/en/rolling/p/image_pipeline/camera_info.html)
+- [Converting between ROS images and OpenCV images (Python)](https://wiki.ros.org/cv_bridge/Tutorials/ConvertingBetweenROSImagesAndOpenCVImagesPython?utm_source=chatgpt.com)
+- [image_pipeline](https://docs.ros.org/en/rolling/p/image_pipeline/camera_info.html)
+
+Image Compression
+- [ffmpeg_image_transport](https://index.ros.org/p/ffmpeg_image_transport/)
+- [ROS2 image transport for ffmpeg/libav](https://docs.ros.org/en/jazzy/p/ffmpeg_image_transport/doc/readme_include.html)
+- [ROS 2のffmpeg_image_transportパッケージを使って効率よく画像トピックを配信、購読する](https://qiita.com/dandelion1124/items/deed014872624fd9a50c)
+
 tf2
 - [Introducing tf2](https://docs.ros.org/en/humble/Tutorials/Intermediate/Tf2/Introduction-To-Tf2.html)
 
