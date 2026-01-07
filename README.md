@@ -33,12 +33,14 @@ source install/setup.bash
 ```
 
 ## 🎮 How to use
-### Checking inter-device communication connections / デバイス間通信の接続確認
+### Checking inter-device communication connections / 
+### デバイス間通信の接続確認
 Set `ROS_DOMAIN_ID`
 ```bash
 # NUC 35
 export ROS_DOMAIN_ID=40
 ```
+Run publisher
 ```bash
 # NUC 35
 ros2 run demo_nodes_cpp talker
@@ -48,6 +50,7 @@ Set `ROS_DOMAIN_ID`
 # NUC 34
 export ROS_DOMAIN_ID=40
 ```
+Run subscriber
 ```bash
 # NUC 34
 ros2 run demo_nodes_cpp listener
