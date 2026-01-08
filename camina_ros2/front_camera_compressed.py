@@ -14,6 +14,7 @@ from geometry_msgs.msg import TransformStamped
 import message_filters
 from rclpy.parameter import Parameter
 
+
 class FrontCameraNode(Node):
     def __init__(self):
         super().__init__('front_camera')
@@ -38,10 +39,14 @@ class FrontCameraNode(Node):
         self.declare_parameter('roi_height', 300)
 
         # topics / frames
+        # カラーは compressed トピック
         self.declare_parameter('color_topic', '/camera_front/color/compressed')
         self.declare_parameter('color_info_topic', '/camera_front/color/camera_info')
-        self.declare_parameter('depth_topic', '/camera_front/depth/image_raw')
+
+        # Depth は compressedDepth トピック（例: /camera_front/depth/image/compressedDepth）
+        self.declare_parameter('depth_topic', '/camera_front/depth/image/compressedDepth')
         self.declare_parameter('depth_info_topic', '/camera_front/depth/camera_info')
+
         self.declare_parameter('camera_frame', 'camera_front_depth_optical_frame')
         self.declare_parameter('publish_face_tf', False)   # 顔478点は重いので既定OFF
         self.declare_parameter('publish_body_tf', True)     # 統合ランドマークTF配信
@@ -112,15 +117,16 @@ class FrontCameraNode(Node):
         self.last_tf_time = self.get_clock().now()
 
         # ==== Subscribers with synchronization ====
+        # カラー・デプスともに CompressedImage を購読
         color_sub = message_filters.Subscriber(self, CompressedImage, self.color_topic, qos_profile=10)
-        depth_sub = message_filters.Subscriber(self, Image, self.depth_topic, qos_profile=10)
+        depth_sub = message_filters.Subscriber(self, CompressedImage, self.depth_topic, qos_profile=10)
         depth_info_sub = message_filters.Subscriber(self, CameraInfo, self.depth_info_topic, qos_profile=10)
         ats = message_filters.ApproximateTimeSynchronizer(
             [color_sub, depth_sub, depth_info_sub], queue_size=20, slop=0.05
         )
         ats.registerCallback(self.synced_callback)
 
-        self.get_logger().info('Front Camera Node initialized (with depth→3D & tf broadcasting & pose world landmarks)')
+        self.get_logger().info('Front Camera Node initialized (compressed color + compressedDepth, with depth→3D & tf broadcasting & pose world landmarks)')
 
     # ====================== GUI (ROI) ======================
     def setup_opencv_window(self):
@@ -161,25 +167,22 @@ class FrontCameraNode(Node):
                 self.get_logger().info(f'ROI set: x={self.roi_x}, y={self.roi_y}, w={self.roi_width}, h={self.roi_height}')
 
     # ====================== Core ======================
-    def synced_callback(self, color_msg: CompressedImage, depth_msg: Image, depth_info: CameraInfo):
+    def synced_callback(self, color_msg: CompressedImage, depth_msg: CompressedImage, depth_info: CameraInfo):
+        # カラー: JPEG 圧縮（compressed）
         try:
             color = self.bridge.compressed_imgmsg_to_cv2(color_msg, "bgr8")
         except Exception as e:
             self.get_logger().error(f'color cv bridge error: {e}')
             return
 
-        # depth image decoding
+        # Depth: compressedDepth (PNG) を m 単位の 2D float32 にデコード
         try:
-            depth = self.bridge.imgmsg_to_cv2(depth_msg)
-            # normalize units to meters
-            if depth_msg.encoding in ('16UC1', 'mono16'):
-                depth_m = depth.astype(np.float32) / 1000.0  # mm → m
-            elif depth_msg.encoding in ('32FC1'):
-                depth_m = depth.astype(np.float32)
-            else:
-                depth_m = depth.astype(np.float32)
+            depth_m = self.decode_compressed_depth(depth_msg)
+            if depth_m is None:
+                self.get_logger().warn('decoded depth is None')
+                return
         except Exception as e:
-            self.get_logger().error(f'depth cv bridge error: {e}')
+            self.get_logger().error(f'depth compressed decode error: {e}')
             return
 
         annotated_image, pose_lm, face_lm, lhand_lm, rhand_lm, roi_ctx, pose_world_flat = self.process_image(color)
@@ -197,10 +200,14 @@ class FrontCameraNode(Node):
 
         # Publish combined body landmarks (pose + hands + face[任意])
         body_flat = []
-        if pose_lm: body_flat.extend(pose_lm)
-        if lhand_lm: body_flat.extend(lhand_lm)
-        if rhand_lm: body_flat.extend(rhand_lm)
-        if face_lm: body_flat.extend(face_lm)
+        if pose_lm:
+            body_flat.extend(pose_lm)
+        if lhand_lm:
+            body_flat.extend(lhand_lm)
+        if rhand_lm:
+            body_flat.extend(rhand_lm)
+        if face_lm:
+            body_flat.extend(face_lm)
         self._publish_array(self.body_landmarks_pub, body_flat)
 
         # Publish pose world landmarks (meters, pelvis-centered coordinate per MediaPipe)
@@ -208,8 +215,10 @@ class FrontCameraNode(Node):
             self._publish_array(self.pose_world_landmarks_pub, pose_world_flat)
 
         # 3D projection & TF using depth intrinsics (assuming depth registered to color)
-        fx = depth_info.k[0]; fy = depth_info.k[4]
-        cx = depth_info.k[2]; cy = depth_info.k[5]
+        fx = depth_info.k[0]
+        fy = depth_info.k[4]
+        cx = depth_info.k[2]
+        cy = depth_info.k[5]
 
         # rate limit TF
         now = self.get_clock().now()
@@ -225,11 +234,11 @@ class FrontCameraNode(Node):
             # flat list [x_pix, y_pix, z_mp, ...]
             n = len(flat_xyz) // 3
             for i in range(n):
-                u = float(flat_xyz[3*i + 0])
-                v = float(flat_xyz[3*i + 1])
+                u = float(flat_xyz[3 * i + 0])
+                v = float(flat_xyz[3 * i + 1])
                 # clamp to image bounds
-                u_i = int(np.clip(u, 0, depth_m.shape[1]-1))
-                v_i = int(np.clip(v, 0, depth_m.shape[0]-1))
+                u_i = int(np.clip(u, 0, depth_m.shape[1] - 1))
+                v_i = int(np.clip(v, 0, depth_m.shape[0] - 1))
                 z = self._robust_depth(depth_m, v_i, u_i)  # meters
 
                 if not np.isfinite(z) or z <= 0.0:
@@ -268,18 +277,43 @@ class FrontCameraNode(Node):
         # Show ROI helper window
         disp = annotated_image.copy()
         if self.roi_enabled and self.roi_width > 0 and self.roi_height > 0:
-            cv2.rectangle(disp, (self.roi_x, self.roi_y),
-                          (self.roi_x + self.roi_width, self.roi_y + self.roi_height), (0, 255, 0), 2)
-            cv2.putText(disp, 'ROI', (self.roi_x, self.roi_y - 10),
-                        cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
+            cv2.rectangle(
+                disp,
+                (self.roi_x, self.roi_y),
+                (self.roi_x + self.roi_width, self.roi_y + self.roi_height),
+                (0, 255, 0),
+                2,
+            )
+            cv2.putText(
+                disp,
+                'ROI',
+                (self.roi_x, self.roi_y - 10),
+                cv2.FONT_HERSHEY_SIMPLEX,
+                0.7,
+                (0, 255, 0),
+                2,
+            )
         if self.dragging and self.start_point and self.end_point:
             cv2.rectangle(disp, self.start_point, self.end_point, (255, 0, 0), 2)
-            cv2.putText(disp, 'Selecting ROI...',
-                        (self.start_point[0], self.start_point[1] - 10),
-                        cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 0, 0), 2)
+            cv2.putText(
+                disp,
+                'Selecting ROI...',
+                (self.start_point[0], self.start_point[1] - 10),
+                cv2.FONT_HERSHEY_SIMPLEX,
+                0.7,
+                (255, 0, 0),
+                2,
+            )
 
-        cv2.putText(disp, 'Drag to select ROI', (10, 30),
-                    cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 0), 2)
+        cv2.putText(
+            disp,
+            'Drag to select ROI',
+            (10, 30),
+            cv2.FONT_HERSHEY_SIMPLEX,
+            0.6,
+            (0, 255, 0),
+            2,
+        )
         cv2.imshow('Front Camera - ROI Selection', disp)
         key = cv2.waitKey(1) & 0xFF
         if key == ord('q'):
@@ -298,13 +332,51 @@ class FrontCameraNode(Node):
     def _robust_depth(self, depth_m, v, u):
         """3x3 median (ignore zeros) → meters"""
         h, w = depth_m.shape
-        v0 = max(0, v-1); v1 = min(h, v+2)
-        u0 = max(0, u-1); u1 = min(w, u+2)
+        v0 = max(0, v - 1)
+        v1 = min(h, v + 2)
+        u0 = max(0, u - 1)
+        u1 = min(w, u + 2)
         patch = depth_m[v0:v1, u0:u1].reshape(-1)
         vals = patch[np.isfinite(patch) & (patch > 0.0)]
         if vals.size == 0:
             return np.nan
         return float(np.median(vals))
+
+    def decode_compressed_depth(self, depth_msg: CompressedImage):
+        """
+        compressedDepth (PNG) を m 単位の 2D np.float32 配列にデコードする。
+
+        想定:
+        - 16UC1 (mm) を PNG で圧縮している場合 → /1000.0 で m に変換
+        - 32FC1 の場合はそのまま m として扱う
+
+        実際のフォーマットはカメラドライバ／publisher に依存するので、
+        距離スケールがおかしい場合はここを調整してください。
+        """
+        # CompressedImage.data → バイト列 → PNG としてデコード
+        np_arr = np.frombuffer(depth_msg.data, np.uint8)
+        depth_png = cv2.imdecode(np_arr, cv2.IMREAD_UNCHANGED)
+
+        if depth_png is None:
+            self.get_logger().error("Failed to decode PNG from compressedDepth")
+            return None
+
+        # depth_png の dtype / ch に応じて処理を分ける
+        if depth_png.dtype == np.uint16:
+            # 16UC1 を想定（mm単位）→ m に変換
+            depth_m = depth_png.astype(np.float32) / 1000.0
+        elif depth_png.dtype == np.float32:
+            # そのまま m 単位の 32FC1 とみなす
+            depth_m = depth_png.copy()
+        else:
+            # 想定外フォーマット
+            self.get_logger().warn(
+                f"Unexpected depth PNG dtype: {depth_png.dtype}, shape={depth_png.shape}. "
+                "Assuming 16UC1-like and converting /1000.0."
+            )
+            depth_m = depth_png.astype(np.float32) / 1000.0
+
+        return depth_m
 
     def process_image(self, cv_image):
         """Run MediaPipe on ROI (if enabled), draw, and return full annotated image + flat landmark lists."""
@@ -312,8 +384,8 @@ class FrontCameraNode(Node):
 
         # ROI crop
         if self.roi_enabled and self.roi_width > 0 and self.roi_height > 0:
-            roi_x = int(np.clip(self.roi_x, 0, width-1))
-            roi_y = int(np.clip(self.roi_y, 0, height-1))
+            roi_x = int(np.clip(self.roi_x, 0, width - 1))
+            roi_y = int(np.clip(self.roi_y, 0, height - 1))
             roi_x2 = int(np.clip(roi_x + self.roi_width, 0, width))
             roi_y2 = int(np.clip(roi_y + self.roi_height, 0, height))
             processing_image = cv_image[roi_y:roi_y2, roi_x:roi_x2]
@@ -339,39 +411,57 @@ class FrontCameraNode(Node):
         # Draw holistic pose (33)
         if holistic_results.pose_landmarks:
             self.mp_drawing.draw_landmarks(
-                annotated, holistic_results.pose_landmarks, self.mp_holistic.POSE_CONNECTIONS,
-                landmark_drawing_spec=self.mp_drawing_styles.get_default_pose_landmarks_style())
+                annotated,
+                holistic_results.pose_landmarks,
+                self.mp_holistic.POSE_CONNECTIONS,
+                landmark_drawing_spec=self.mp_drawing_styles.get_default_pose_landmarks_style(),
+            )
 
         # Draw hands
         if holistic_results.left_hand_landmarks:
             self.mp_drawing.draw_landmarks(
-                annotated, holistic_results.left_hand_landmarks, self.mp_holistic.HAND_CONNECTIONS,
+                annotated,
+                holistic_results.left_hand_landmarks,
+                self.mp_holistic.HAND_CONNECTIONS,
                 landmark_drawing_spec=self.mp_drawing_styles.get_default_hand_landmarks_style(),
-                connection_drawing_spec=self.mp_drawing_styles.get_default_hand_connections_style())
+                connection_drawing_spec=self.mp_drawing_styles.get_default_hand_connections_style(),
+            )
 
         if holistic_results.right_hand_landmarks:
             self.mp_drawing.draw_landmarks(
-                annotated, holistic_results.right_hand_landmarks, self.mp_holistic.HAND_CONNECTIONS,
+                annotated,
+                holistic_results.right_hand_landmarks,
+                self.mp_holistic.HAND_CONNECTIONS,
                 landmark_drawing_spec=self.mp_drawing_styles.get_default_hand_landmarks_style(),
-                connection_drawing_spec=self.mp_drawing_styles.get_default_hand_connections_style())
+                connection_drawing_spec=self.mp_drawing_styles.get_default_hand_connections_style(),
+            )
 
         # Face mesh (with iris)
         if face_results.multi_face_landmarks:
             for face_landmarks in face_results.multi_face_landmarks:
                 self.mp_drawing.draw_landmarks(
-                    annotated, face_landmarks, self.mp_face_mesh.FACEMESH_TESSELATION,
+                    annotated,
+                    face_landmarks,
+                    self.mp_face_mesh.FACEMESH_TESSELATION,
                     landmark_drawing_spec=None,
-                    connection_drawing_spec=self.mp_drawing_styles.get_default_face_mesh_tesselation_style())
+                    connection_drawing_spec=self.mp_drawing_styles.get_default_face_mesh_tesselation_style(),
+                )
 
                 self.mp_drawing.draw_landmarks(
-                    annotated, face_landmarks, self.mp_face_mesh.FACEMESH_CONTOURS,
+                    annotated,
+                    face_landmarks,
+                    self.mp_face_mesh.FACEMESH_CONTOURS,
                     landmark_drawing_spec=None,
-                    connection_drawing_spec=self.mp_drawing_styles.get_default_face_mesh_contours_style())
+                    connection_drawing_spec=self.mp_drawing_styles.get_default_face_mesh_contours_style(),
+                )
 
                 self.mp_drawing.draw_landmarks(
-                    annotated, face_landmarks, self.mp_face_mesh.FACEMESH_IRISES,
+                    annotated,
+                    face_landmarks,
+                    self.mp_face_mesh.FACEMESH_IRISES,
                     landmark_drawing_spec=None,
-                    connection_drawing_spec=self.mp_drawing_styles.get_default_face_mesh_iris_connections_style())
+                    connection_drawing_spec=self.mp_drawing_styles.get_default_face_mesh_iris_connections_style(),
+                )
 
         # Stitch back into full image if ROI
         if self.roi_enabled and self.roi_width > 0 and self.roi_height > 0:
@@ -383,10 +473,26 @@ class FrontCameraNode(Node):
         # Extract landmarks in full-image pixel coords (x_pix, y_pix, z_mp)
         # PoseはHolisticを優先、無ければPose単独のimage_landmarksを利用
         pose_src = holistic_results.pose_landmarks if holistic_results.pose_landmarks else pose_results.pose_landmarks
-        pose_landmarks = self.extract_pose_landmarks(pose_src, width, height, roi_offset, (roi_x, roi_y, roi_x2, roi_y2))
-        face_landmarks = self.extract_face_landmarks(face_results, width, height, roi_offset, (roi_x, roi_y, roi_x2, roi_y2))
-        left_hand_landmarks = self.extract_hand_landmarks(holistic_results.left_hand_landmarks, width, height, roi_offset, (roi_x, roi_y, roi_x2, roi_y2))
-        right_hand_landmarks = self.extract_hand_landmarks(holistic_results.right_hand_landmarks, width, height, roi_offset, (roi_x, roi_y, roi_x2, roi_y2))
+        pose_landmarks = self.extract_pose_landmarks(
+            pose_src, width, height, roi_offset, (roi_x, roi_y, roi_x2, roi_y2)
+        )
+        face_landmarks = self.extract_face_landmarks(
+            face_results, width, height, roi_offset, (roi_x, roi_y, roi_x2, roi_y2)
+        )
+        left_hand_landmarks = self.extract_hand_landmarks(
+            holistic_results.left_hand_landmarks,
+            width,
+            height,
+            roi_offset,
+            (roi_x, roi_y, roi_x2, roi_y2),
+        )
+        right_hand_landmarks = self.extract_hand_landmarks(
+            holistic_results.right_hand_landmarks,
+            width,
+            height,
+            roi_offset,
+            (roi_x, roi_y, roi_x2, roi_y2),
+        )
 
         # Pose world landmarks (meters, pelvis-centered)
         pose_world_flat = []
