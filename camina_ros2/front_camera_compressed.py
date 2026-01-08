@@ -103,7 +103,7 @@ class FrontCameraNode(Node):
         self.setup_opencv_window()
 
         # ==== Publishers ====
-        self.annotated_pub = self.create_publisher(Image, '/front_camera/annotated_image', 10)
+        self.annotated_pub = self.create_publisher(CompressedImage, '/front_camera/annotated_image', 10)
         self.pose_landmarks_pub = self.create_publisher(Float32MultiArray, '/front_camera/pose_landmarks', 10)
         self.pose_world_landmarks_pub = self.create_publisher(Float32MultiArray, '/front_camera/pose_world_landmarks', 10)
         self.face_landmarks_pub = self.create_publisher(Float32MultiArray, '/front_camera/face_landmarks', 10)
@@ -188,9 +188,12 @@ class FrontCameraNode(Node):
         annotated_image, pose_lm, face_lm, lhand_lm, rhand_lm, roi_ctx, pose_world_flat = self.process_image(color)
 
         # Publish annotated image
-        ann = self.bridge.cv2_to_imgmsg(annotated_image, "bgr8")
-        ann.header = color_msg.header
-        self.annotated_pub.publish(ann)
+        try:
+            ann = self.bridge.cv2_to_compressed_imgmsg(annotated_image, dst_format='jpeg')
+            ann.header = color_msg.header
+            self.annotated_pub.publish(ann)
+        except Exception as e:
+            self.get_logger().error(f'Failed to publish annotated image: {e}')
 
         # Publish individual 2D landmarks (pixel + mediapipe z)
         self._publish_array(self.pose_landmarks_pub, pose_lm)
