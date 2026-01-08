@@ -30,6 +30,7 @@ setup(
     entry_points={
         'console_scripts': [
             'front_ramera_node = camina_ros2.front_camera:main',
+            'front_ramera_compressed_node = camina_ros2.front_camera_compressed:main',
             'rear_camera_node = camina_ros2.rear_camera:main',
             'landmark_tf_listener_node = camina_ros2.landmark_tf_listener:main',
             'camina_tf2_listener_node = camina_ros2.camina_tf2_listener:main',
