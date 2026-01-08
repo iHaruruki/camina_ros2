@@ -57,7 +57,7 @@ Details:
 ### encode
 #### libx264
 ```bash
-ros2 run image_transport republish raw --ros-args --remap in:=/camera/color/image_raw --remap out:=/camera/color/compressed
+ros2 run image_transport republish raw compressed --ros-args --remap in:=/camera/color/image_raw --remap out/compressed:=/camera/color/compressed
 ```
 
 #### H.265(HEVC)
@@ -71,3 +71,7 @@ ros2 run image_transport republish raw compressedDepth --ros-args --remap in:=/c
 ```
 
 ### decode
+#### libx264
+```bash
+ros2 run image_transport republish compressed raw --ros-args --remap in/compressed:=/camera/color/compressed --remap out:=/camera/color/unzipped
+```
