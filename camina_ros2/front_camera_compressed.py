@@ -40,12 +40,12 @@ class FrontCameraNode(Node):
 
         # topics / frames
         # カラーは compressed トピック
-        self.declare_parameter('color_topic', '/camera_front/color/compressed')
-        self.declare_parameter('color_info_topic', '/camera_front/color/camera_info')
+        self.declare_parameter('color_topic', '/camera/color/compressed')
+        self.declare_parameter('color_info_topic', '/camera/color/camera_info')
 
         # Depth は compressedDepth トピック（例: /camera_front/depth/image/compressedDepth）
-        self.declare_parameter('depth_topic', '/camera_front/depth/image/compressedDepth')
-        self.declare_parameter('depth_info_topic', '/camera_front/depth/camera_info')
+        self.declare_parameter('depth_topic', '/camera/depth/compressed')
+        self.declare_parameter('depth_info_topic', '/camera/depth/camera_info')
 
         self.declare_parameter('camera_frame', 'camera_front_depth_optical_frame')
         self.declare_parameter('publish_face_tf', False)   # 顔478点は重いので既定OFF
@@ -344,32 +344,54 @@ class FrontCameraNode(Node):
 
     def decode_compressed_depth(self, depth_msg: CompressedImage):
         """
-        compressedDepth (PNG) を m 単位の 2D np.float32 配列にデコードする。
+        compressedDepth (PNG + 12バイト独自ヘッダ) を
+        m 単位の 2D np.float32 配列にデコードする。
 
-        想定:
-        - 16UC1 (mm) を PNG で圧縮している場合 → /1000.0 で m に変換
-        - 32FC1 の場合はそのまま m として扱う
-
-        実際のフォーマットはカメラドライバ／publisher に依存するので、
-        距離スケールがおかしい場合はここを調整してください。
+        仕様:
+        - format: "16UC1; compressedDepth"
+        - data: [12バイトヘッダ][PNGバイト列]
+        - PNG の中身は 16UC1 (mm) を想定 → /1000.0 で m に変換
         """
-        # CompressedImage.data → バイト列 → PNG としてデコード
-        np_arr = np.frombuffer(depth_msg.data, np.uint8)
-        depth_png = cv2.imdecode(np_arr, cv2.IMREAD_UNCHANGED)
 
-        if depth_png is None:
-            self.get_logger().error("Failed to decode PNG from compressedDepth")
+        raw = np.frombuffer(depth_msg.data, np.uint8)
+        data_len = raw.size
+        self.get_logger().debug(
+            f"decode_compressed_depth: raw_len={data_len}, format='{depth_msg.format}'"
+        )
+
+        if data_len <= 12:
+            self.get_logger().error(f"compressedDepth data too small: len={data_len}")
             return None
 
-        # depth_png の dtype / ch に応じて処理を分ける
+        # 先頭 12 バイトはヘッダ、それ以降が PNG 本体
+        HEADER_SIZE = 12
+        png_bytes = raw[HEADER_SIZE:]
+
+        # PNG シグネチャチェック（任意だがデバッグに便利）
+        if png_bytes.size >= 8:
+            sig = png_bytes[:8].tolist()
+            self.get_logger().debug(f"PNG signature head={sig}")
+
+        depth_png = cv2.imdecode(png_bytes, cv2.IMREAD_UNCHANGED)
+        if depth_png is None:
+            self.get_logger().error(
+                f"Failed to decode PNG from compressedDepth after stripping header. "
+                f"data_len={data_len}, png_len={png_bytes.size}"
+            )
+            return None
+
+        self.get_logger().debug(
+            f"decoded PNG from compressedDepth: shape={depth_png.shape}, dtype={depth_png.dtype}"
+        )
+
+        # dtype に応じて m に変換
         if depth_png.dtype == np.uint16:
-            # 16UC1 を想定（mm単位）→ m に変換
+            # 16UC1 (mm) とみなして m に変換
             depth_m = depth_png.astype(np.float32) / 1000.0
         elif depth_png.dtype == np.float32:
-            # そのまま m 単位の 32FC1 とみなす
+            # すでに m 単位
             depth_m = depth_png.copy()
         else:
-            # 想定外フォーマット
             self.get_logger().warn(
                 f"Unexpected depth PNG dtype: {depth_png.dtype}, shape={depth_png.shape}. "
                 "Assuming 16UC1-like and converting /1000.0."
