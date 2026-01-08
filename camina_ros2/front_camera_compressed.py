@@ -3,7 +3,7 @@
 
 import rclpy
 from rclpy.node import Node
-from sensor_msgs.msg import Image, CameraInfo
+from sensor_msgs.msg import Image, CompressedImage, CameraInfo
 from std_msgs.msg import Float32MultiArray
 from cv_bridge import CvBridge
 import cv2
@@ -38,7 +38,7 @@ class FrontCameraNode(Node):
         self.declare_parameter('roi_height', 300)
 
         # topics / frames
-        self.declare_parameter('color_topic', '/camera_front/color/image_raw')
+        self.declare_parameter('color_topic', '/camera_front/color/compressed')
         self.declare_parameter('color_info_topic', '/camera_front/color/camera_info')
         self.declare_parameter('depth_topic', '/camera_front/depth/image_raw')
         self.declare_parameter('depth_info_topic', '/camera_front/depth/camera_info')
@@ -112,7 +112,7 @@ class FrontCameraNode(Node):
         self.last_tf_time = self.get_clock().now()
 
         # ==== Subscribers with synchronization ====
-        color_sub = message_filters.Subscriber(self, Image, self.color_topic, qos_profile=10)
+        color_sub = message_filters.Subscriber(self, CompressedImage, self.color_topic, qos_profile=10)
         depth_sub = message_filters.Subscriber(self, Image, self.depth_topic, qos_profile=10)
         depth_info_sub = message_filters.Subscriber(self, CameraInfo, self.depth_info_topic, qos_profile=10)
         ats = message_filters.ApproximateTimeSynchronizer(
@@ -161,9 +161,9 @@ class FrontCameraNode(Node):
                 self.get_logger().info(f'ROI set: x={self.roi_x}, y={self.roi_y}, w={self.roi_width}, h={self.roi_height}')
 
     # ====================== Core ======================
-    def synced_callback(self, color_msg: Image, depth_msg: Image, depth_info: CameraInfo):
+    def synced_callback(self, color_msg: CompressedImage, depth_msg: Image, depth_info: CameraInfo):
         try:
-            color = self.bridge.imgmsg_to_cv2(color_msg, "bgr8")
+            color = self.bridge.compressed_imgmsg_to_cv2(color_msg, "bgr8")
         except Exception as e:
             self.get_logger().error(f'color cv bridge error: {e}')
             return
