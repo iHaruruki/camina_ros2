@@ -66,5 +66,5 @@ ros2 run image_transport republish raw ffmpeg --ros-args --remap in:=/image_raw 
 
 ### Depth
 ```bash
-ros2 run image_transport republish raw compressedDepth   --ros-args   --remap in:=/camera_rear/depth/image_raw   --remap out/compressedDepth:=/camera_rear/depth/compressed
+ros2 run image_transport republish raw compressedDepth --ros-args --remap in:=/camera/depth/image_raw --remap out/compressedDepth:=/camera/depth/compressed
 ```
