@@ -38,7 +38,7 @@ class FrontCameraNode(Node):
         self.declare_parameter('roi_height', 300)
 
         # topics / frames
-        self.declare_parameter('color_topic', '/camera_front/color/image_raw')
+        self.declare_parameter('color_topic', '/camera_front/color/unzipped')
         self.declare_parameter('color_info_topic', '/camera_front/color/camera_info')
         self.declare_parameter('depth_topic', '/camera_front/depth/image_raw')
         self.declare_parameter('depth_info_topic', '/camera_front/depth/camera_info')

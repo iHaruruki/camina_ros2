@@ -1,4 +1,4 @@
-### list_transpoerts
+`ros2 run image_transport list_transports`
 ```bash
 Declared transports:
 image_transport/compressed
@@ -55,12 +55,12 @@ Details:
 ```
 ## 🎮 How to use
 ### encode
-#### libx264
+#### Color(libx264)
 ```bash
 ros2 run image_transport republish raw compressed --ros-args --remap in:=/camera/color/image_raw --remap out/compressed:=/camera/color/compressed
 ```
 
-#### H.265(HEVC)
+#### Color(H.265[HEVC])
 ```bash
 ros2 run image_transport republish raw ffmpeg --ros-args --remap in:=/camera/color/image_raw --remap out/ffmpeg:=/camera/color/ffmpeg -r __node:=ffmpeg_repub -p out.ffmpeg.encoder:=libx265
 ```
@@ -71,7 +71,12 @@ ros2 run image_transport republish raw compressedDepth --ros-args --remap in:=/c
 ```
 
 ### decode
-#### libx264
+#### Color(libx264)
 ```bash
 ros2 run image_transport republish compressed raw --ros-args --remap in/compressed:=/camera/color/compressed --remap out:=/camera/color/unzipped
+```
+
+#### Color(H.265[HEVC])
+```bash
+ros2 run image_transport republish ffmpeg raw --ros-args --remap in/ffmpeg:=/camera/color/ffmpeg --remap out:=/camera/color/unffmpeg
 ```
