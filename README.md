@@ -80,22 +80,26 @@ Stop `ros2 run demo_nodes_cpp talker` and `ros2 run demo_nodes_cpp listener` wit
 front camera
 ```bash
 # NUC35
+export ROS_DOMAIN_ID=40
 ros2 launch astra_camera astra_pro.launch.xml camera_name:=camera_front publish_tf:=false
 ```
 rear camera
 ```bash
 # NUC34
+export ROS_DOMAIN_ID=40
 ros2 launch astra_camera astra_pro.launch.xml camera_name:=camera_rear publish_tf:=false
 ```
 rviz & tf
 ```bash
 # NUC35
+export ROS_DOMAIN_ID=40
 ros2 launch camina_ros2 camina.launch.py
 ```
 
 ### Run LiDAR
 ```bash
 # NUC35
+export ROS_DOMAIN_ID=40
 ros2 launch urg_node2 urg_node2.launch.py
 ```
 
@@ -103,11 +107,13 @@ ros2 launch urg_node2 urg_node2.launch.py
 Mediapipe for front camera
 ```bash
 # NUC35
+export ROS_DOMAIN_ID=40
 ros2 run camina_ros2 front_ramera_node
 ```
 Mediapipe for rear camera
 ```bash
 # NUC34
+export ROS_DOMAIN_ID=40
 ros2 run camina_ros2 rear_ramera_node
 ```
 
