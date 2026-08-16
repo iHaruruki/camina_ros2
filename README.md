@@ -56,19 +56,16 @@ source install/setup.bash
 ```
 
 ## 🎮 How to use
-### Checking inter-device communication connections / 
-### デバイス間通信の接続確認
+### Checking inter-device communication connections / デバイス間通信の接続確認
 Run publisher
 ```bash
 # NUC 35
-export ROS_DOMAIN_ID=40
 ros2 run demo_nodes_cpp talker
 ```
 
 Run subscriber
 ```bash
 # NUC 34
-export ROS_DOMAIN_ID=40
 ros2 run demo_nodes_cpp listener
 ```
 Result / 実行結果
@@ -92,46 +89,43 @@ $ ros2 run demo_nodes_cpp listener
 Stop `ros2 run demo_nodes_cpp talker` and `ros2 run demo_nodes_cpp listener` with `Ctrl + c`  
 `Ctrl + c`で`ros2 run demo_nodes_cpp talker`と`ros2 run demo_nodes_cpp listener`を停止する．
 
-### Run Camera
-front camera
+### Launch camina
+Front camera
 ```bash
 # NUC35
-export ROS_DOMAIN_ID=40
-ros2 launch astra_camera astra_pro.launch.xml camera_name:=camera_front publish_tf:=false
+ros2 launch camina_ros2 astra_pro.launch.py camera_name:=camera_front publish_tf:=false
 ```
-rear camera
+
+Run LiDAR
+```bash
+# NUC35
+ros2 launch urg_node2 urg_node2.launch.py
+```
+
+Rear camera
 ```bash
 # NUC34
-export ROS_DOMAIN_ID=40
-ros2 launch astra_camera astra_pro.launch.xml camera_name:=camera_rear publish_tf:=false
+ros2 launch camina_ros2 astra_pro.launch.py camera_name:=camera_rear publish_tf:=false
 ```
+
 rviz & tf
 ```bash
 # NUC35
-export ROS_DOMAIN_ID=40
 ros2 launch camina_ros2 camina.launch.py
-```
-
-### Run LiDAR
-```bash
-# NUC35
-export ROS_DOMAIN_ID=40
-ros2 launch urg_node2 urg_node2.launch.py
 ```
 
 ### Run MediaPipe
 Mediapipe for front camera
 ```bash
 # NUC35
-export ROS_DOMAIN_ID=40
 ros2 run camina_ros2 front_ramera_node
 ```
 Mediapipe for rear camera
 ```bash
 # NUC34
-export ROS_DOMAIN_ID=40
 ros2 run camina_ros2 rear_ramera_node
 ```
+
 
 ## :triangular_ruler: Adjustment
 ### Check URDF / カメラの位置や姿勢を変更する
