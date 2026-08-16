@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.8)
-project(camina_ros2_msgs)
+project(camina_ros2)
 
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic)
@@ -7,15 +7,33 @@ endif()
 
 # find dependencies
 find_package(ament_cmake REQUIRED)
-find_package(rosidl_default_generators REQUIRED)
-find_package(std_msgs REQUIRED)
+find_package(ament_cmake_python REQUIRED)
+find_package(rclpy REQUIRED)
 
-rosidl_generate_interfaces(${PROJECT_NAME}
-  "msg/PoseLandmark.msg"
-  DEPENDENCIES std_msgs
+# Install Python modules
+ament_python_install_package(${PROJECT_NAME} PACKAGE_DIR src/${PROJECT_NAME})
+
+# Install Python executables
+install(
+  PROGRAMS
+    scripts/holistic_pose_csv.py
+    scripts/holistic_pose.py
+    scripts/camina_tf2_listensner.py
+    scripts/front_camera_compressed.py
+    scripts/front_camera.py
+    scripts/landmark_tf_listener.py
+    scripts/rear_camera.py
+  DESTINATION lib/${PROJECT_NAME}
 )
 
-ament_export_dependencies(rosidl_default_runtime)
+install(DIRECTORY launch rviz
+  DESTINATION share/${PROJECT_NAME}
+)
+
+install(FILES
+  pyproject.toml
+  DESTINATION share/${PROJECT_NAME}
+)
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)

@@ -12,6 +12,17 @@
 ### LiDAR setup
 [urg_node2_setup](https://github.com/Hokuyo-aut/urg_node2.git)
 
+### Install `UV`
+```bash
+curl -LsSf https://astral.sh/uv/install.sh | sh
+echo 'eval "$(uv generate-shell-completion bash)"' >> ~/.bashrc
+echo 'eval "$(uvx --generate-shell-completion bash)"' >> ~/.bashrc
+```
+> [!TIP]
+> - uvは，超高速なPythonパッケージマネージャ  
+> - 仮想環境の作成・パッケージ管理・Pythonバージョン管理を一元化  
+> [Installing uv](https://docs.astral.sh/uv/getting-started/installation/)
+
 ### Dependent packages
 ```bash
 # NUC34 & 35
@@ -25,10 +36,21 @@ cd ~/ros2_ws/src
 git clone https://github.com/iHaruruki/camina_ros2.git
 ```
 
+### Install python packages
+```bash
+cd ~/ros2_ws/src/camina_ros2/camina_ros2
+uv sync
+```
+
 ### Build
 ```bash
 # NUC34 & 35
 cd ~/ros2_ws
+sudo chmod +x ~/ros2_ws/src/camina_ros2/camina_ros2/scripts/*.py
+
+colcon build --symlink-install --packages-select camina_ros2_msgs
+source install/setup.bash
+
 colcon build --symlink-install --packages-select camina_ros2
 source install/setup.bash
 ```
@@ -36,24 +58,17 @@ source install/setup.bash
 ## 🎮 How to use
 ### Checking inter-device communication connections / 
 ### デバイス間通信の接続確認
-Set `ROS_DOMAIN_ID`
-```bash
-# NUC 35
-export ROS_DOMAIN_ID=40
-```
 Run publisher
 ```bash
 # NUC 35
+export ROS_DOMAIN_ID=40
 ros2 run demo_nodes_cpp talker
 ```
-Set `ROS_DOMAIN_ID`
-```bash
-# NUC 34
-export ROS_DOMAIN_ID=40
-```
+
 Run subscriber
 ```bash
 # NUC 34
+export ROS_DOMAIN_ID=40
 ros2 run demo_nodes_cpp listener
 ```
 Result / 実行結果
