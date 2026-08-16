@@ -124,9 +124,9 @@ class HolisticPoseTFNode(Node):
         self._setup_opencv_window()
 
         # ==== Publishers ====
-        self.annotated_pub = self.create_publisher(Image, '/holistic/annotated_image', 10)
-        self.pose_landmarks_pub = self.create_publisher(Float32MultiArray, '/holistic/pose/landmarks', 10)
-        self.lm2d_pub = self.create_publisher(PoseLandmark, '/holistic/pose/landmarks/csv', 10)
+        self.annotated_pub = self.create_publisher(Image, '/camina/holistic/annotated_image', 10)
+        self.pose_landmarks_pub = self.create_publisher(Float32MultiArray, '/camina/holistic/pose/landmarks', 10)
+        self.lm2d_pub = self.create_publisher(PoseLandmark, '/camina/holistic/pose/landmarks/csv', 10)
 
         # ==== TF Broadcaster ====
         self.tf_broadcaster = TransformBroadcaster(self)
