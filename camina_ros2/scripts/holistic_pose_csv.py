@@ -3,7 +3,6 @@
 import rclpy
 from rclpy.node import Node
 from rclpy.parameter import Parameter
-from rclpy.qos import QoSPresetProfiles  # Added: QoS presets
 from sensor_msgs.msg import Image, CameraInfo
 from std_msgs.msg import Float32MultiArray
 from cv_bridge import CvBridge
@@ -13,7 +12,7 @@ import numpy as np
 import message_filters
 from tf2_ros import TransformBroadcaster
 from geometry_msgs.msg import TransformStamped
-from rclpy.qos import QoSProfile, QoSReliabilityPolicy, QoSHistoryPolicy
+from rclpy.qos import QoSProfile, QoSReliabilityPolicy, QoSHistoryPolicy, QoSPresetProfiles
 
 from camina_ros2_msgs.msg import PoseLandmark
 
@@ -65,18 +64,13 @@ class HolisticPoseTFNode(Node):
         self.declare_parameter('roi_height', 300)
 
         # Topics / Frames
-        self.declare_parameter('color_topic', '/camera/color/image_raw')
-        self.declare_parameter('color_info_topic', '/camera/color/camera_info')
-        self.declare_parameter('depth_topic', '/camera/depth/image_raw')
-        self.declare_parameter('depth_info_topic', '/camera/depth/camera_info')
         self.declare_parameter('camera_frame', 'camera_depth_optical_frame')  # 親フレーム
-        self.declare_parameter('child_prefix', 'landmark')         # 子フレームの接頭辞
+        self.declare_parameter('child_prefix', 'mediapipe_landmark') # 子フレームの接頭辞
 
         # Landmark2D message publish settings
         self.declare_parameter('publish_landmark2d', True)
-        #self.declare_parameter('landmark2d_topic', '/holistic/pose/landmark')
 
-        # TF 配信設定（デフォルトON）
+        # TF
         self.declare_parameter('publish_pose_tf', True)
         self.declare_parameter('tf_rate_hz', 30.0)
 
@@ -98,15 +92,10 @@ class HolisticPoseTFNode(Node):
         self.roi_width = int(self.get_parameter('roi_width').value)
         self.roi_height = int(self.get_parameter('roi_height').value)
 
-        self.color_topic = self.get_parameter('color_topic').value
-        self.color_info_topic = self.get_parameter('color_info_topic').value
-        self.depth_topic = self.get_parameter('depth_topic').value
-        self.depth_info_topic = self.get_parameter('depth_info_topic').value
         self.camera_frame = self.get_parameter('camera_frame').value
         self.child_prefix = self.get_parameter('child_prefix').value
 
         self.publish_landmark2d = bool(self.get_parameter('publish_landmark2d').value)
-        #self.landmark2d_topic = self.get_parameter('landmark2d_topic').value
 
         self.publish_pose_tf = bool(self.get_parameter('publish_pose_tf').value)
         self.tf_rate_hz = float(self.get_parameter('tf_rate_hz').value)
@@ -116,7 +105,7 @@ class HolisticPoseTFNode(Node):
         self.min_depth_m    = float(self.get_parameter('min_depth_m').value)
         self.max_depth_m    = float(self.get_parameter('max_depth_m').value)
 
-        # ==== MediaPipe Holistic（pose中心）====
+        # ==== MediaPipe Holistic ====
         self.holistic = self.mp_holistic.Holistic(
             static_image_mode=False,
             model_complexity=model_complexity,
@@ -148,10 +137,10 @@ class HolisticPoseTFNode(Node):
 
         # ==== Subscribers with synchronization ====
         #sensor_qos = QoSPresetProfiles.SENSOR_DATA.value  # Added: QoS preset
-        color_sub = message_filters.Subscriber(self, Image, self.color_topic, qos_profile=10)
-        color_info_sub = message_filters.Subscriber(self, CameraInfo, self.color_info_topic, qos_profile=10)
-        depth_sub = message_filters.Subscriber(self, Image, self.depth_topic, qos_profile=10)
-        depth_info_sub = message_filters.Subscriber(self, CameraInfo, self.depth_info_topic, qos_profile=10)
+        color_sub = message_filters.Subscriber(self, Image, "/camera/color/image_raw", qos_profile=10)
+        color_info_sub = message_filters.Subscriber(self, CameraInfo, "/camera/color/camera_info", qos_profile=10)
+        depth_sub = message_filters.Subscriber(self, Image, "/camera/depth/image_raw", qos_profile=10)
+        depth_info_sub = message_filters.Subscriber(self, CameraInfo, "/camera/depth/camera_info", qos_profile=10)
 
         ats = message_filters.ApproximateTimeSynchronizer(
             [color_sub, color_info_sub, depth_sub, depth_info_sub], queue_size=20, slop=0.05
@@ -273,7 +262,7 @@ class HolisticPoseTFNode(Node):
             # カウント更新（デバッグ用）
             self._publish_count += 1
             if self._publish_count % 30 == 0:  # 30フレームごとにログ
-                self.get_logger().info(f'Published {self._publish_count} frames ({self._publish_count * 33} messages)')
+                self.get_logger().debug(f'Published {self._publish_count} frames ({self._publish_count * 33} messages)')
 
         # === TF配信（既定ON） ===
         if self.publish_pose_tf and pose_lm_flat:
