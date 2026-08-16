@@ -1,12 +1,13 @@
 # camina_ros2
 [![ROS 2 Distro - Humble](https://img.shields.io/badge/ros2-Humble-blue)](https://docs.ros.org/en/humble/)
+[![ROS 2 Distro - Jazzy](https://img.shields.io/badge/ros2-Jazzy-blue)](https://docs.ros.org/en/jazzy/)
 
 ## 🚀 Overview
 - Whole-body pose estimation
 
 ## 🛠️ Setup
 ### Camera setup
-[ros2_astra_camera_setup](https://github.com/iHaruruki/ros2_astra_camera_setup.git)
+[ros2_astra_camera](https://github.com/iHaruruki/ros2_astra_camera.git)
 
 ### LiDAR setup
 [urg_node2_setup](https://github.com/Hokuyo-aut/urg_node2.git)
