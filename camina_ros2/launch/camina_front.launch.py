@@ -106,10 +106,10 @@ def launch_setup(context, *args, **kwargs):
             "max_depth_m": float(max_depth_m),
         }],
         remappings=[
-            ("/camera/color/image_raw", color_info_topic),
-            ("/camera/color/camera_info", color_image_topic),
-            ("/camera/depth/image_raw", depth_info_topic),
-            ("/camera/depth/camera_info", depth_image_topic),
+            ("/camera/color/image_info", color_info_topic),
+            ("/camera/color/camera_raw", color_image_topic),
+            ("/camera/depth/image_info", depth_info_topic),
+            ("/camera/depth/camera_raw", depth_image_topic),
         ],
     )
 
