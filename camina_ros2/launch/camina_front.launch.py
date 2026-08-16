@@ -45,12 +45,6 @@ def launch_setup(context, *args, **kwargs):
     camera_frame = LaunchConfiguration("camera_frame").perform(context)
     child_prefix = LaunchConfiguration("child_prefix").perform(context)
 
-    # Topics remapper
-    color_info_topic = LaunchConfiguration("color_info_topic").perform(context)
-    color_image_topic = LaunchConfiguration("color_image_topic").perform(context)
-    depth_info_topic = LaunchConfiguration("depth_info_topic").perform(context)
-    depth_image_topic = LaunchConfiguration("depth_image_topic").perform(context)
-
     # Publish settings
     publish_landmark2d = LaunchConfiguration("publish_landmark2d").perform(context)
 
@@ -106,10 +100,10 @@ def launch_setup(context, *args, **kwargs):
             "max_depth_m": float(max_depth_m),
         }],
         remappings=[
-            ("/camera/color/image_info", color_info_topic),
-            ("/camera/color/camera_raw", color_image_topic),
-            ("/camera/depth/image_info", depth_info_topic),
-            ("/camera/depth/camera_raw", depth_image_topic),
+            ("/camera/color/image_raw", "/camera_front/color/image_raw"),
+            ("/camera/color/camera_info", "/camera_front/color/camera_info"),
+            ("/camera/depth/image_raw", "/camera_front/depth/image_raw"),
+            ("/camera/depth/camera_info", "/camera_front/depth/camera_info"),
         ],
     )
 
@@ -185,12 +179,6 @@ def generate_launch_description():
         # Topics / Frames
         DeclareLaunchArgument("camera_frame", default_value="camera_depth_optical_frame"),
         DeclareLaunchArgument("child_prefix", default_value="mediapipe_landmark"),
-
-        # Topic remappers
-        DeclareLaunchArgument("color_info_topic", default_value="/camera_front/color/camera_info"),
-        DeclareLaunchArgument("color_image_topic", default_value="/camera_front/color/image_raw"),
-        DeclareLaunchArgument("depth_info_topic", default_value="/camera_front/depth/camera_info"),
-        DeclareLaunchArgument("depth_image_topic", default_value="/camera_front/depth/image_raw"),
 
         # Landmark2D publish settings
         DeclareLaunchArgument("publish_landmark2d", default_value="true"),
