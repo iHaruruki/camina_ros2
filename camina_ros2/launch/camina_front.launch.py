@@ -4,50 +4,27 @@ import subprocess
 
 from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
-from launch.actions import DeclareLaunchArgument
+from launch.actions import DeclareLaunchArgument, OpaqueFunction
 from launch.substitutions import LaunchConfiguration
 from launch_ros.actions import Node
 
 
-def generate_launch_description():
+def launch_setup(context, *args, **kwargs):
     share_dir = get_package_share_directory("camina_ros2")
-    subprocess.run(["uv", "sync", "--project", share_dir, "--no-editable"], check=True)
+
     venv_site_pkgs = glob.glob(
         os.path.join(share_dir, ".venv", "lib", "python*", "site-packages")
     )
     existing_pythonpath = os.environ.get("PYTHONPATH", "")
     new_pythonpath = ":".join([*venv_site_pkgs, existing_pythonpath]).strip(":")
 
-    urdf_file_path_cmd = DeclareLaunchArgument(
-        "urdf_file_path",
-        default_value="camina_front",
-        description="urdf file path",
-    )
+    namespace = LaunchConfiguration("namespace").perform(context)
+    use_sim_time = LaunchConfiguration("use_sim_time").perform(context)
+    urdf_file_path = LaunchConfiguration("urdf_file_path").perform(context)
+    rviz_config_path = LaunchConfiguration("rviz_config_path").perform(context)
 
-    rviz_config_path_cmd = DeclareLaunchArgument(
-        "rviz_config_path",
-        default_value="camina_front",
-        description="rviz config file path",
-    )
-
-    namespace_cmd = DeclareLaunchArgument(
-        "namespace",
-        default_value="camina_front",
-        description="Namespace for the nodes",
-    )
-
-    use_sim_time_cmd = DeclareLaunchArgument(
-        "use_sim_time",
-        default_value="false",
-        description="Use simulation (Gazebo) clock if true",
-    )
-
-    namespace = LaunchConfiguration("namespace")
-    use_sim_time = LaunchConfiguration("use_sim_time")
-    urdf_path = os.path.join(LaunchConfiguration("urdf_file_path"))
-    with open(urdf_path, "r") as f:
+    with open(urdf_file_path, "r") as f:
         robot_desc = f.read()
-    rviz_config_dir = os.path.join(LaunchConfiguration("rviz_config_path"))
 
     mediapipe_node_cmd = Node(
         package="camina_ros2",
@@ -64,7 +41,7 @@ def generate_launch_description():
         name="robot_state_publisher",
         output="screen",
         parameters=[{
-            "use_sim_time": use_sim_time,
+            "use_sim_time": use_sim_time == "true",
             "robot_description": robot_desc,
         }],
     )
@@ -73,16 +50,41 @@ def generate_launch_description():
         package="rviz2",
         executable="rviz2",
         name="rviz2",
-        arguments=["-d", rviz_config_dir],
+        arguments=["-d", rviz_config_path],
         output="screen",
     )
 
-    return LaunchDescription([
-        urdf_file_path_cmd,
-        rviz_config_path_cmd,
-        namespace_cmd,
-        use_sim_time_cmd,
+    return [
         mediapipe_node_cmd,
         robot_state_publisher_cmd,
         rviz_cmd,
+    ]
+
+
+def generate_launch_description():
+    share_dir = get_package_share_directory("camina_ros2")
+    subprocess.run(["uv", "sync", "--project", share_dir, "--no-editable"], check=True)
+
+    return LaunchDescription([
+        DeclareLaunchArgument(
+            "urdf_file_path",
+            default_value=os.path.join(share_dir, "urdf", "camina.urdf"),
+            description="URDF file path",
+        ),
+        DeclareLaunchArgument(
+            "rviz_config_path",
+            default_value=os.path.join(share_dir, "rviz", "camina.rviz"),
+            description="RViz config file path",
+        ),
+        DeclareLaunchArgument(
+            "namespace",
+            default_value="camina_front",
+            description="Namespace for the nodes",
+        ),
+        DeclareLaunchArgument(
+            "use_sim_time",
+            default_value="false",
+            description="Use simulation (Gazebo) clock if true",
+        ),
+        OpaqueFunction(function=launch_setup),
     ])
