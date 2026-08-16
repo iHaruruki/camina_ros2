@@ -177,7 +177,7 @@ def generate_launch_description():
         DeclareLaunchArgument("roi_height", default_value="300"),
 
         # Topics / Frames
-        DeclareLaunchArgument("camera_frame", default_value="camera_depth_optical_frame"),
+        DeclareLaunchArgument("camera_frame", default_value="camera_front_depth_optical_frame"),
         DeclareLaunchArgument("child_prefix", default_value="mediapipe_landmark"),
 
         # Landmark2D publish settings
