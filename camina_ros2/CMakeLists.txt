@@ -18,7 +18,7 @@ install(
   PROGRAMS
     scripts/holistic_pose_csv.py
     scripts/holistic_pose.py
-    scripts/camina_tf2_listensner.py
+    scripts/camina_tf2_listener.py
     scripts/front_camera_compressed.py
     scripts/front_camera.py
     scripts/landmark_tf_listener.py
