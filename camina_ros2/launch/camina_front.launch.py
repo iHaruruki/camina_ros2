@@ -41,7 +41,7 @@ def launch_setup(context, *args, **kwargs):
         name="robot_state_publisher",
         output="screen",
         parameters=[{
-            "use_sim_time": use_sim_time == "true",
+            "use_sim_time": use_sim_time,
             "robot_description": robot_desc,
         }],
     )
@@ -52,6 +52,9 @@ def launch_setup(context, *args, **kwargs):
         name="rviz2",
         arguments=["-d", rviz_config_path],
         output="screen",
+        parameters=[{
+            "use_sim_time": use_sim_time,
+        }],
     )
 
     return [
