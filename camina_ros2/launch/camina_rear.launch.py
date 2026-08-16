@@ -99,6 +99,9 @@ def launch_setup(context, *args, **kwargs):
             ("/camera/color/camera_info", "/camera_rear/color/camera_info"),
             ("/camera/depth/image_raw", "/camera_rear/depth/image_raw"),
             ("/camera/depth/camera_info", "/camera_rear/depth/camera_info"),
+            ("/camina/holistic/annotated_image", "/camina_rear/holistic/annotated_image"),
+            ("/camina/holistic/pose/landmarks", "/camina_rear/holistic/pose/landmarks"),
+            ("/camina/holistic/pose/landmarks/csv", "/camina_rear/holistic/pose/landmarks/csv"),
         ],
     )
 
