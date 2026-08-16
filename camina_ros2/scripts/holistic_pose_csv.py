@@ -13,8 +13,9 @@ import numpy as np
 import message_filters
 from tf2_ros import TransformBroadcaster
 from geometry_msgs.msg import TransformStamped
-from mediapipe_ros2_msgs.msg import PoseLandmark
 from rclpy.qos import QoSProfile, QoSReliabilityPolicy, QoSHistoryPolicy
+
+from camina_ros2_msgs.msg import PoseLandmark
 
 
 POSE_NAMES = [
