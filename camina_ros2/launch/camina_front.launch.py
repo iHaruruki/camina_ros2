@@ -192,7 +192,7 @@ def generate_launch_description():
 
         # Topics / Frames
         DeclareLaunchArgument("camera_frame", default_value="camera_front_depth_optical_frame"),
-        DeclareLaunchArgument("child_prefix", default_value="mediapipe_landmark"),
+        DeclareLaunchArgument("child_prefix", default_value="camina_front/mediapipe_landmark"),
 
         # Landmark2D publish settings
         DeclareLaunchArgument("publish_landmark2d", default_value="true"),
