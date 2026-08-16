@@ -121,6 +121,16 @@ def launch_setup(context, *args, **kwargs):
         }],
     )
 
+    rear_camera_rqt_cmd = Node(
+            package='rqt_image_view',
+            executable='rqt_image_view',
+            name='rqt_image_view',
+            namespace=namespace,
+            arguments=[
+                "/camina_rear/holistic/annotated_image",
+            ]
+    )
+
     rviz_cmd = Node(
         package="rviz2",
         executable="rviz2",
@@ -136,6 +146,7 @@ def launch_setup(context, *args, **kwargs):
         mediapipe_node_cmd,
         robot_state_publisher_cmd,
         rviz_cmd,
+        rear_camera_rqt_cmd,
     ]
 
 
