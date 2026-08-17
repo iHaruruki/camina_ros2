@@ -1,5 +1,8 @@
+import os
 from launch import LaunchDescription
-from launch.actions import DeclareLaunchArgument, GroupAction
+from launch.actions import DeclareLaunchArgument, GroupAction, IncludeLaunchDescription
+from launch.launch_description_sources import PythonLaunchDescriptionSource
+from ament_index_python.packages import get_package_share_directory
 from launch.substitutions import LaunchConfiguration
 from launch_ros.actions import Node, PushRosNamespace
 
@@ -133,11 +136,39 @@ def generate_launch_description():
         ],
     )
 
+    color_compressed = Node(
+        package='image_transport',
+        executable='republish',
+        name='color_compressed',
+        namespace=LaunchConfiguration('camera_name'),
+        output='screen',
+        arguments=['raw', 'compressed'],
+        remappings=[
+            ('in', '/camera_rear/color/image_raw'),
+            ('out/compressed', '/camera_rear/color/image_raw/compressed'),
+        ],
+    )
+
+    depth_compressed = Node(
+        package='image_transport',
+        executable='republish',
+        name='depth_compressed',
+        namespace=LaunchConfiguration('camera_name'),
+        output='screen',
+        arguments=['raw', 'compressedDepth'],
+        remappings=[
+            ('in', '/camera_rear/depth/image_raw'),
+            ('out/compressedDepth', '/camera_rear/depth/image_raw/compressedDepth'),
+        ],
+    )
+
     return LaunchDescription(
         declared_arguments + [
             GroupAction([
                 PushRosNamespace(camera_name),
                 node,
-            ])
+            ]),
+            color_compressed,
+            depth_compressed,
         ]
     )
