@@ -25,6 +25,8 @@ def launch_setup(context, *args, **kwargs):
     # Base launch args
     namespace = LaunchConfiguration("namespace").perform(context)
     use_sim_time = LaunchConfiguration("use_sim_time").perform(context)
+    urdf_file_path = LaunchConfiguration("urdf_file_path").perform(context)
+    rviz_config_path = LaunchConfiguration("rviz_config_path").perform(context)
 
     # MediaPipe params
     min_detection_confidence = LaunchConfiguration("min_detection_confidence").perform(context)
@@ -55,6 +57,9 @@ def launch_setup(context, *args, **kwargs):
     presence_threshold = LaunchConfiguration("presence_threshold").perform(context)
     min_depth_m = LaunchConfiguration("min_depth_m").perform(context)
     max_depth_m = LaunchConfiguration("max_depth_m").perform(context)
+
+    with open(urdf_file_path, "r") as f:
+        robot_desc = f.read()
 
     mediapipe_node_cmd = Node(
         package="camina_ros2",
@@ -105,8 +110,43 @@ def launch_setup(context, *args, **kwargs):
         ],
     )
 
+    robot_state_publisher_cmd = Node(
+        package="robot_state_publisher",
+        executable="robot_state_publisher",
+        name="robot_state_publisher",
+        output="screen",
+        parameters=[{
+            "use_sim_time": _as_bool(use_sim_time),
+            "robot_description": robot_desc,
+        }],
+    )
+
+    rear_camera_rqt_cmd = Node(
+            package='rqt_image_view',
+            executable='rqt_image_view',
+            name='rqt_image_view',
+            namespace=namespace,
+            arguments=[
+                "/camina_rear/holistic/annotated_image",
+            ]
+    )
+
+    rviz_cmd = Node(
+        package="rviz2",
+        executable="rviz2",
+        name="rviz2",
+        arguments=["-d", rviz_config_path],
+        output="screen",
+        parameters=[{
+            "use_sim_time": _as_bool(use_sim_time),
+        }],
+    )
+
     return [
         mediapipe_node_cmd,
+        # robot_state_publisher_cmd,
+        # rviz_cmd,
+        # rear_camera_rqt_cmd,
     ]
 
 
@@ -116,6 +156,16 @@ def generate_launch_description():
 
     return LaunchDescription([
         # Existing args
+        DeclareLaunchArgument(
+            "urdf_file_path",
+            default_value=os.path.join(share_dir, "urdf", "camina.urdf"),
+            description="URDF file path",
+        ),
+        DeclareLaunchArgument(
+            "rviz_config_path",
+            default_value=os.path.join(share_dir, "rviz", "camina.rviz"),
+            description="RViz config file path",
+        ),
         DeclareLaunchArgument(
             "namespace",
             default_value="camina_rear",
