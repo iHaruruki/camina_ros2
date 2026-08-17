@@ -143,7 +143,7 @@ class HolisticPoseTFNode(Node):
         depth_info_sub = message_filters.Subscriber(self, CameraInfo, "/camera/depth/camera_info", qos_profile=10)
 
         ats = message_filters.ApproximateTimeSynchronizer(
-            [color_sub, color_info_sub, depth_sub, depth_info_sub], queue_size=20, slop=0.05
+            [color_sub, color_info_sub, depth_sub, depth_info_sub], queue_size=50, slop=0.05
         )
         ats.registerCallback(self.synced_callback)
 
@@ -194,7 +194,7 @@ class HolisticPoseTFNode(Node):
             self.get_logger().error(f'color cv bridge error: {e}')
             return
 
-        # --- depth (meters) ---
+        # --- depth ---
         try:
             depth = self.bridge.imgmsg_to_cv2(depth_msg)
             if depth_msg.encoding in ('16UC1', 'mono16'):
@@ -202,7 +202,7 @@ class HolisticPoseTFNode(Node):
             elif depth_msg.encoding in ('32FC1',):
                 depth_m = depth.astype(np.float32)
             else:
-                depth_m = depth.astype(np.float32)  # best-effort
+                depth_m = depth.astype(np.float32)
         except Exception as e:
             self.get_logger().error(f'depth cv bridge error: {e}')
             return
@@ -214,27 +214,24 @@ class HolisticPoseTFNode(Node):
         ann.header = color_msg.header
         self.annotated_pub.publish(ann)
 
-        # Publish 2D pose landmarks（可視化やログ用）
+        # Publish 2D pose landmarks
         self._publish_array(self.pose_landmarks_pub, pose_lm_flat)
 
         # Added: Publish Landmark2D messages (per landmark)
         if self.publish_landmark2d:
-            # pose_lm_flatが99要素（33×3）であることを確認
             expected_length = NUM_LANDMARKS * 3
             if len(pose_lm_flat) != expected_length:
                 self.get_logger().error(
                     f'pose_lm_flat length mismatch: got {len(pose_lm_flat)}, expected {expected_length}'
                 )
-                # 不足分をNaNで埋める
                 while len(pose_lm_flat) < expected_length:
                     pose_lm_flat.append(float('nan'))
             
-            # デバッグ: 最初のフレームでログ出力
+            # Debug
             if not hasattr(self, '_first_publish_done'):
                 self.get_logger().info(f'Publishing {NUM_LANDMARKS} landmarks per frame')
                 self._first_publish_done = True
 
-            # 必ず0から32まで順番に33個すべてをpublish
             for landmark_id in range(NUM_LANDMARKS):
                 base = 3 * landmark_id
                 x = pose_lm_flat[base + 0]
@@ -245,7 +242,7 @@ class HolisticPoseTFNode(Node):
                 msg.name = POSE_NAMES[landmark_id] if landmark_id < len(POSE_NAMES) else f"landmark_{landmark_id}"
                 msg.index = landmark_id
                 
-                # NaNを適切に処理
+                # NaN
                 if np.isfinite(x):
                     msg.x = float(x)
                 else:
@@ -259,12 +256,11 @@ class HolisticPoseTFNode(Node):
                 # publish
                 self.lm2d_pub.publish(msg)
             
-            # カウント更新（デバッグ用）
             self._publish_count += 1
-            if self._publish_count % 30 == 0:  # 30フレームごとにログ
+            if self._publish_count % 30 == 0:
                 self.get_logger().debug(f'Published {self._publish_count} frames ({self._publish_count * 33} messages)')
 
-        # === TF配信（既定ON） ===
+        # === TF ===
         if self.publish_pose_tf and pose_lm_flat:
             fx = depth_info.k[0]; fy = depth_info.k[4]
             cx = depth_info.k[2]; cy = depth_info.k[5]
@@ -301,7 +297,6 @@ class HolisticPoseTFNode(Node):
             self.set_parameters([Parameter('roi_enabled', value=False)])
             self.get_logger().info('ROI reset')
 
-    # ---------- helpers ----------
     def _publish_array(self, pub, flat):
         msg = Float32MultiArray()
         msg.data = flat
@@ -324,29 +319,24 @@ class HolisticPoseTFNode(Node):
         n = len(flat_xyz) // 3
 
         for i in range(n):
-            # 1) 可視度・存在度フィルタ
             vvis = vis_list[i] if i < len(vis_list) else 0.0
             vpres = pres_list[i] if i < len(pres_list) else 0.0
             if vvis < self.visibility_thr or vpres < self.presence_thr:
                 continue
 
-            # 2) 画面外は送らない（※クリップしない）
             u = float(flat_xyz[3*i + 0])
             v = float(flat_xyz[3*i + 1])
             if not (0.0 <= u < float(W) and 0.0 <= v < float(H)):
                 continue
 
-            # 3) 深度のロバスト取得（ゼロ/NaN/外れ値はスキップ）
             u_i = int(u); v_i = int(v)
             z = self._robust_depth(depth_m, v_i, u_i)  # meters
             if (not np.isfinite(z)) or (z < self.min_depth_m) or (z > self.max_depth_m):
                 continue
 
-            # 4) バックプロジェクション（pinhole）
             X = (u - cx) / fx * z
             Y = (v - cy) / fy * z
 
-            # 5) TF送信
             t = TransformStamped()
             t.header.stamp = color_msg.header.stamp
             t.header.frame_id = self.camera_frame
