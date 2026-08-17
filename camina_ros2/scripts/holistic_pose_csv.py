@@ -315,67 +315,76 @@ class HolisticPoseTFNode(Node):
 
     def _broadcast_landmarks_tf(self, flat_xyz, vis_list, pres_list,
                             depth_m, fx, fy, cx, cy, color_msg):
-        
         if depth_m is None or depth_m.ndim != 2:
+            self.get_logger().warn("TF skip: depth_m invalid")
             return
         if (not np.isfinite(fx)) or (not np.isfinite(fy)) or fx <= 0.0 or fy <= 0.0:
+            self.get_logger().warn(f"TF skip: invalid intrinsics fx={fx}, fy={fy}")
             return
         if (not np.isfinite(cx)) or (not np.isfinite(cy)):
+            self.get_logger().warn(f"TF skip: invalid principal point cx={cx}, cy={cy}")
             return
 
         H, W = depth_m.shape
         n = len(flat_xyz) // 3
 
+        sent = 0
+        skip_vis = 0
+        skip_uv_nan = 0
+        skip_uv_oob = 0
+        skip_depth = 0
+        skip_xy_nan = 0
+
         for i in range(n):
-            # 1) visibility / presence filter
             vvis = vis_list[i] if i < len(vis_list) else 0.0
             vpres = pres_list[i] if i < len(pres_list) else 0.0
             if vvis < self.visibility_thr or vpres < self.presence_thr:
+                skip_vis += 1
                 continue
 
-            # 2) read 2D landmark and validate
             u = float(flat_xyz[3 * i + 0])
             v = float(flat_xyz[3 * i + 1])
 
             if (not np.isfinite(u)) or (not np.isfinite(v)):
+                skip_uv_nan += 1
                 continue
             if not (0.0 <= u < float(W) and 0.0 <= v < float(H)):
+                skip_uv_oob += 1
                 continue
 
-            # 3) robust depth at pixel
-            u_i = int(u)
-            v_i = int(v)
-            z = self._robust_depth(depth_m, v_i, u_i)  # meters
+            z = self._robust_depth(depth_m, int(v), int(u))
             if (not np.isfinite(z)) or (z < self.min_depth_m) or (z > self.max_depth_m):
+                skip_depth += 1
                 continue
 
-            # 4) back-projection (pinhole)
             X = (u - cx) / fx * z
             Y = (v - cy) / fy * z
-
-            # 5) final NaN/Inf guard
-            if (not np.isfinite(X)) or (not np.isfinite(Y)) or (not np.isfinite(z)):
+            if (not np.isfinite(X)) or (not np.isfinite(Y)):
+                skip_xy_nan += 1
                 continue
 
-            # 6) publish TF
             t = TransformStamped()
             t.header.stamp = color_msg.header.stamp
             t.header.frame_id = self.camera_frame
-
             name = POSE_NAMES[i] if i < len(POSE_NAMES) else f"landmark_{i}"
             t.child_frame_id = f"{self.child_prefix}/{name}"
-
             t.transform.translation.x = float(X)
             t.transform.translation.y = float(Y)
             t.transform.translation.z = float(z)
-
-            # No orientation estimate from 1 point -> identity quaternion
             t.transform.rotation.x = 0.0
             t.transform.rotation.y = 0.0
             t.transform.rotation.z = 0.0
             t.transform.rotation.w = 1.0
-
             self.tf_broadcaster.sendTransform(t)
+            sent += 1
+
+        self._publish_count += 1
+        if self._publish_count % 30 == 0:
+            self.get_logger().info(
+                f"TF rear: sent={sent}, skip_vis={skip_vis}, skip_uv_nan={skip_uv_nan}, "
+                f"skip_uv_oob={skip_uv_oob}, skip_depth={skip_depth}, skip_xy_nan={skip_xy_nan}, "
+                f"fx={fx:.2f}, fy={fy:.2f}, cx={cx:.2f}, cy={cy:.2f}"
+            )
 
     def process_image(self, cv_image):
         height, width = cv_image.shape[:2]
