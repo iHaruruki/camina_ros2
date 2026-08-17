@@ -204,7 +204,7 @@ def generate_launch_description():
         # Threshold params
         DeclareLaunchArgument("visibility_threshold", default_value="0.6"),
         DeclareLaunchArgument("presence_threshold", default_value="0.0"),
-        DeclareLaunchArgument("min_depth_m", default_value="0.1"),
+        DeclareLaunchArgument("min_depth_m", default_value="0.5"),
         DeclareLaunchArgument("max_depth_m", default_value="8.0"),
 
         OpaqueFunction(function=launch_setup),
