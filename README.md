@@ -105,7 +105,7 @@ ros2 launch urg_node2 urg_node2.launch.py
 Mediapipe for front camera
 ```bash
 # NUC35
-ros2 run camina_ros2 front_ramera_node
+ros2 launch camina_ros2 camina_front.launch.py
 ```
 
 Rear camera
@@ -117,7 +117,7 @@ ros2 launch camina_ros2 astra_pro.launch.py camera_name:=camera_rear publish_tf:
 Mediapipe for rear camera
 ```bash
 # NUC34
-ros2 run camina_ros2 rear_ramera_node
+ros2 launch camina_ros2 camina_rear.launch.py
 ```
 
 
