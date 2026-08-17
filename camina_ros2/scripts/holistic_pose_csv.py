@@ -12,7 +12,7 @@ import numpy as np
 import message_filters
 from tf2_ros import TransformBroadcaster
 from geometry_msgs.msg import TransformStamped
-from rclpy.qos import QoSProfile, QoSReliabilityPolicy, QoSHistoryPolicy, QoSPresetProfiles
+from rclpy.qos import QoSPresetProfiles
 
 from camina_ros2_msgs.msg import PoseLandmark
 
@@ -35,52 +35,45 @@ POSE_NAMES = [
     "left_heel", "right_heel",
     "left_foot_index", "right_foot_index",
 ]
-NUM_LANDMARKS = len(POSE_NAMES)  # = 33
+NUM_LANDMARKS = len(POSE_NAMES)  # 33
 
 
 class HolisticPoseTFNode(Node):
     def __init__(self):
-        super().__init__('holistic_node')
+        super().__init__('holistic_pose_csv')
 
-        # ==== CV Bridge ====
         self.bridge = CvBridge()
 
-        # ==== MediaPipe (Holistic: pose 全身) ====
         self.mp_drawing = mp.solutions.drawing_utils
         self.mp_drawing_styles = mp.solutions.drawing_styles
         self.mp_holistic = mp.solutions.holistic
 
-        # ==== Parameters ====
+        # Parameters
         self.declare_parameter('min_detection_confidence', 0.6)
         self.declare_parameter('min_tracking_confidence', 0.6)
-        self.declare_parameter('model_complexity', 1)           # 0/1/2
+        self.declare_parameter('model_complexity', 1)
         self.declare_parameter('enable_segmentation', False)
 
-        # ROI（任意）
         self.declare_parameter('roi_enabled', False)
         self.declare_parameter('roi_x', 0)
         self.declare_parameter('roi_y', 0)
         self.declare_parameter('roi_width', 400)
         self.declare_parameter('roi_height', 300)
 
-        # Topics / Frames
-        self.declare_parameter('camera_frame', 'camera_depth_optical_frame')  # 親フレーム
-        self.declare_parameter('child_prefix', 'mediapipe_landmark') # 子フレームの接頭辞
+        self.declare_parameter('camera_frame', 'camera_depth_optical_frame')
+        self.declare_parameter('child_prefix', 'mediapipe_landmark')
 
-        # Landmark2D message publish settings
         self.declare_parameter('publish_landmark2d', True)
 
-        # TF
         self.declare_parameter('publish_pose_tf', True)
         self.declare_parameter('tf_rate_hz', 30.0)
 
-        # しきい値（未検出/不確かはTF送らない）
-        self.declare_parameter('visibility_threshold', 0.6)  # 0.0〜1.0
-        self.declare_parameter('presence_threshold',  0.0)   # 0.0〜1.0
-        self.declare_parameter('min_depth_m', 0.1)          # 無効扱いの最小距離[m]
-        self.declare_parameter('max_depth_m', 8.0)          # 無効扱いの最大距離[m]
+        self.declare_parameter('visibility_threshold', 0.6)
+        self.declare_parameter('presence_threshold', 0.0)
+        self.declare_parameter('min_depth_m', 0.1)
+        self.declare_parameter('max_depth_m', 8.0)
 
-        # ==== Read params ====
+        # Read params
         min_det = float(self.get_parameter('min_detection_confidence').value)
         min_trk = float(self.get_parameter('min_tracking_confidence').value)
         model_complexity = int(self.get_parameter('model_complexity').value)
@@ -92,20 +85,19 @@ class HolisticPoseTFNode(Node):
         self.roi_width = int(self.get_parameter('roi_width').value)
         self.roi_height = int(self.get_parameter('roi_height').value)
 
-        self.camera_frame = self.get_parameter('camera_frame').value
-        self.child_prefix = self.get_parameter('child_prefix').value
+        self.camera_frame = str(self.get_parameter('camera_frame').value)
+        self.child_prefix = str(self.get_parameter('child_prefix').value)
 
         self.publish_landmark2d = bool(self.get_parameter('publish_landmark2d').value)
-
         self.publish_pose_tf = bool(self.get_parameter('publish_pose_tf').value)
         self.tf_rate_hz = float(self.get_parameter('tf_rate_hz').value)
 
         self.visibility_thr = float(self.get_parameter('visibility_threshold').value)
-        self.presence_thr   = float(self.get_parameter('presence_threshold').value)
-        self.min_depth_m    = float(self.get_parameter('min_depth_m').value)
-        self.max_depth_m    = float(self.get_parameter('max_depth_m').value)
+        self.presence_thr = float(self.get_parameter('presence_threshold').value)
+        self.min_depth_m = float(self.get_parameter('min_depth_m').value)
+        self.max_depth_m = float(self.get_parameter('max_depth_m').value)
 
-        # ==== MediaPipe Holistic ====
+        # MediaPipe
         self.holistic = self.mp_holistic.Holistic(
             static_image_mode=False,
             model_complexity=model_complexity,
@@ -117,39 +109,38 @@ class HolisticPoseTFNode(Node):
             min_tracking_confidence=min_trk
         )
 
-        # ==== ROI GUI ====
+        # ROI GUI
         self.dragging = False
         self.start_point = None
         self.end_point = None
         self._setup_opencv_window()
 
-        # ==== Publishers ====
+        # Publishers
         self.annotated_pub = self.create_publisher(Image, '/camina/holistic/annotated_image', 10)
         self.pose_landmarks_pub = self.create_publisher(Float32MultiArray, '/camina/holistic/pose/landmarks', 10)
         self.lm2d_pub = self.create_publisher(PoseLandmark, '/camina/holistic/pose/landmarks/csv', 10)
 
-        # ==== TF Broadcaster ====
+        # TF
         self.tf_broadcaster = TransformBroadcaster(self)
         self.last_tf_time = self.get_clock().now()
 
-        self._first_publish_done = False
         self._publish_count = 0
+        self._warned_intrinsics_once = False
 
-        # ==== Subscribers with synchronization ====
-        #sensor_qos = QoSPresetProfiles.SENSOR_DATA.value  # Added: QoS preset
-        color_sub = message_filters.Subscriber(self, Image, "/camera/color/image_raw", qos_profile=10)
-        color_info_sub = message_filters.Subscriber(self, CameraInfo, "/camera/color/camera_info", qos_profile=10)
-        depth_sub = message_filters.Subscriber(self, Image, "/camera/depth/image_raw", qos_profile=10)
-        depth_info_sub = message_filters.Subscriber(self, CameraInfo, "/camera/depth/camera_info", qos_profile=10)
+        # Subscribers + sync (sensor qos)
+        sensor_qos = QoSPresetProfiles.SENSOR_DATA.value
+        color_sub = message_filters.Subscriber(self, Image, "/camera/color/image_raw", qos_profile=sensor_qos)
+        color_info_sub = message_filters.Subscriber(self, CameraInfo, "/camera/color/camera_info", qos_profile=sensor_qos)
+        depth_sub = message_filters.Subscriber(self, Image, "/camera/depth/image_raw", qos_profile=sensor_qos)
+        depth_info_sub = message_filters.Subscriber(self, CameraInfo, "/camera/depth/camera_info", qos_profile=sensor_qos)
 
         ats = message_filters.ApproximateTimeSynchronizer(
-            [color_sub, color_info_sub, depth_sub, depth_info_sub], queue_size=50, slop=0.05
+            [color_sub, color_info_sub, depth_sub, depth_info_sub], queue_size=20, slop=0.05
         )
         ats.registerCallback(self.synced_callback)
 
         self.get_logger().info('Holistic Pose TF node ready')
 
-    # ====================== GUI (ROI) ======================
     def _setup_opencv_window(self):
         try:
             cv2.namedWindow('Holistic Pose - ROI Selection', cv2.WINDOW_AUTOSIZE)
@@ -172,10 +163,11 @@ class HolisticPoseTFNode(Node):
                 y1 = min(self.start_point[1], self.end_point[1])
                 x2 = max(self.start_point[0], self.end_point[0])
                 y2 = max(self.start_point[1], self.end_point[1])
-                self.roi_x = x1; self.roi_y = y1
-                self.roi_width = x2 - x1; self.roi_height = y2 - y1
+                self.roi_x = x1
+                self.roi_y = y1
+                self.roi_width = x2 - x1
+                self.roi_height = y2 - y1
                 self.roi_enabled = True
-                # Fixed: use value= in Parameter
                 self.set_parameters([
                     Parameter('roi_enabled', value=True),
                     Parameter('roi_x', value=int(self.roi_x)),
@@ -183,22 +175,23 @@ class HolisticPoseTFNode(Node):
                     Parameter('roi_width', value=int(self.roi_width)),
                     Parameter('roi_height', value=int(self.roi_height)),
                 ])
-                self.get_logger().info(f'ROI set: x={self.roi_x}, y={self.roi_y}, w={self.roi_width}, h={self.roi_height}')
+                self.get_logger().info(
+                    f'ROI set: x={self.roi_x}, y={self.roi_y}, w={self.roi_width}, h={self.roi_height}'
+                )
 
-    # ====================== Core ======================
     def synced_callback(self, color_msg: Image, color_info: CameraInfo, depth_msg: Image, depth_info: CameraInfo):
-        # --- color ---
+        # color
         try:
             color = self.bridge.imgmsg_to_cv2(color_msg, "bgr8")
         except Exception as e:
             self.get_logger().error(f'color cv bridge error: {e}')
             return
 
-        # --- depth ---
+        # depth
         try:
             depth = self.bridge.imgmsg_to_cv2(depth_msg)
             if depth_msg.encoding in ('16UC1', 'mono16'):
-                depth_m = depth.astype(np.float32) / 1000.0  # mm → m
+                depth_m = depth.astype(np.float32) / 1000.0
             elif depth_msg.encoding in ('32FC1',):
                 depth_m = depth.astype(np.float32)
             else:
@@ -209,61 +202,41 @@ class HolisticPoseTFNode(Node):
 
         annotated_image, (pose_lm_flat, vis_list, pres_list), _ = self.process_image(color)
 
-        # Publish annotated image
         ann = self.bridge.cv2_to_imgmsg(annotated_image, "bgr8")
         ann.header = color_msg.header
         self.annotated_pub.publish(ann)
 
-        # Publish 2D pose landmarks
         self._publish_array(self.pose_landmarks_pub, pose_lm_flat)
 
-        # Added: Publish Landmark2D messages (per landmark)
         if self.publish_landmark2d:
             expected_length = NUM_LANDMARKS * 3
-            if len(pose_lm_flat) != expected_length:
-                self.get_logger().error(
-                    f'pose_lm_flat length mismatch: got {len(pose_lm_flat)}, expected {expected_length}'
-                )
-                while len(pose_lm_flat) < expected_length:
-                    pose_lm_flat.append(float('nan'))
-            
-            # Debug
-            if not hasattr(self, '_first_publish_done'):
-                self.get_logger().info(f'Publishing {NUM_LANDMARKS} landmarks per frame')
-                self._first_publish_done = True
+            if len(pose_lm_flat) < expected_length:
+                pose_lm_flat = pose_lm_flat + [float('nan')] * (expected_length - len(pose_lm_flat))
 
             for landmark_id in range(NUM_LANDMARKS):
                 base = 3 * landmark_id
                 x = pose_lm_flat[base + 0]
                 y = pose_lm_flat[base + 1]
-                
+
                 msg = PoseLandmark()
                 msg.header = color_msg.header
-                msg.name = POSE_NAMES[landmark_id] if landmark_id < len(POSE_NAMES) else f"landmark_{landmark_id}"
+                msg.name = POSE_NAMES[landmark_id]
                 msg.index = landmark_id
-                
-                # NaN
-                if np.isfinite(x):
-                    msg.x = float(x)
-                else:
-                    msg.x = float('nan')
-                
-                if np.isfinite(y):
-                    msg.y = float(y)
-                else:
-                    msg.y = float('nan')
-                
-                # publish
+                msg.x = float(x) if np.isfinite(x) else float('nan')
+                msg.y = float(y) if np.isfinite(y) else float('nan')
                 self.lm2d_pub.publish(msg)
-            
-            self._publish_count += 1
-            if self._publish_count % 30 == 0:
-                self.get_logger().debug(f'Published {self._publish_count} frames ({self._publish_count * 33} messages)')
 
-        # === TF ===
+        # TF
         if self.publish_pose_tf and pose_lm_flat:
-            fx = depth_info.k[0]; fy = depth_info.k[4]
-            cx = depth_info.k[2]; cy = depth_info.k[5]
+            fx, fy, cx, cy, src = self._extract_intrinsics(color_info, depth_info)
+            if src == "invalid":
+                if not self._warned_intrinsics_once:
+                    self.get_logger().warn("No valid intrinsics in depth/color K/P. TF skipped.")
+                    self._warned_intrinsics_once = True
+                return
+
+            if src != "depth_k" and (self._publish_count % 30 == 0):
+                self.get_logger().warn(f"Using intrinsics fallback: {src}")
 
             now = self.get_clock().now()
             if (now - self.last_tf_time).nanoseconds >= (1e9 / self.tf_rate_hz):
@@ -273,13 +246,18 @@ class HolisticPoseTFNode(Node):
                     depth_m, fx, fy, cx, cy, color_msg
                 )
 
-        # ROIウィンドウ
+        # ROI display
         disp = annotated_image.copy()
         if self.roi_enabled and self.roi_width > 0 and self.roi_height > 0:
-            cv2.rectangle(disp, (self.roi_x, self.roi_y),
-                          (self.roi_x + self.roi_width, self.roi_y + self.roi_height), (0, 255, 0), 2)
+            cv2.rectangle(
+                disp,
+                (self.roi_x, self.roi_y),
+                (self.roi_x + self.roi_width, self.roi_y + self.roi_height),
+                (0, 255, 0), 2
+            )
             cv2.putText(disp, 'ROI', (self.roi_x, self.roi_y - 10),
                         cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
+
         if self.dragging and self.start_point and self.end_point:
             cv2.rectangle(disp, self.start_point, self.end_point, (255, 0, 0), 2)
             cv2.putText(disp, 'Selecting ROI...',
@@ -289,6 +267,7 @@ class HolisticPoseTFNode(Node):
         cv2.putText(disp, 'Drag to select ROI  (q: close / r: reset ROI)', (10, 30),
                     cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 0), 2)
         cv2.imshow('Holistic Pose - ROI Selection', disp)
+
         key = cv2.waitKey(1) & 0xFF
         if key == ord('q'):
             cv2.destroyAllWindows()
@@ -297,16 +276,44 @@ class HolisticPoseTFNode(Node):
             self.set_parameters([Parameter('roi_enabled', value=False)])
             self.get_logger().info('ROI reset')
 
+        self._publish_count += 1
+
+    def _extract_intrinsics(self, color_info: CameraInfo, depth_info: CameraInfo):
+        # 1) depth K
+        fx = float(depth_info.k[0]); fy = float(depth_info.k[4])
+        cx = float(depth_info.k[2]); cy = float(depth_info.k[5])
+        if np.isfinite([fx, fy, cx, cy]).all() and fx > 0.0 and fy > 0.0:
+            return fx, fy, cx, cy, "depth_k"
+
+        # 2) depth P
+        fx = float(depth_info.p[0]); fy = float(depth_info.p[5])
+        cx = float(depth_info.p[2]); cy = float(depth_info.p[6])
+        if np.isfinite([fx, fy, cx, cy]).all() and fx > 0.0 and fy > 0.0:
+            return fx, fy, cx, cy, "depth_p"
+
+        # 3) color K
+        fx = float(color_info.k[0]); fy = float(color_info.k[4])
+        cx = float(color_info.k[2]); cy = float(color_info.k[5])
+        if np.isfinite([fx, fy, cx, cy]).all() and fx > 0.0 and fy > 0.0:
+            return fx, fy, cx, cy, "color_k"
+
+        # 4) color P
+        fx = float(color_info.p[0]); fy = float(color_info.p[5])
+        cx = float(color_info.p[2]); cy = float(color_info.p[6])
+        if np.isfinite([fx, fy, cx, cy]).all() and fx > 0.0 and fy > 0.0:
+            return fx, fy, cx, cy, "color_p"
+
+        return None, None, None, None, "invalid"
+
     def _publish_array(self, pub, flat):
         msg = Float32MultiArray()
         msg.data = flat
         pub.publish(msg)
 
     def _robust_depth(self, depth_m, v, u):
-        """3x3 median (ignore zeros) → meters"""
         h, w = depth_m.shape
-        v0 = max(0, v-1); v1 = min(h, v+2)
-        u0 = max(0, u-1); u1 = min(w, u+2)
+        v0 = max(0, v - 1); v1 = min(h, v + 2)
+        u0 = max(0, u - 1); u1 = min(w, u + 2)
         patch = depth_m[v0:v1, u0:u1].reshape(-1)
         vals = patch[np.isfinite(patch) & (patch > 0.0)]
         if vals.size == 0:
@@ -314,53 +321,38 @@ class HolisticPoseTFNode(Node):
         return float(np.median(vals))
 
     def _broadcast_landmarks_tf(self, flat_xyz, vis_list, pres_list,
-                            depth_m, fx, fy, cx, cy, color_msg):
+                                depth_m, fx, fy, cx, cy, color_msg):
         if depth_m is None or depth_m.ndim != 2:
-            self.get_logger().warn("TF skip: depth_m invalid")
             return
         if (not np.isfinite(fx)) or (not np.isfinite(fy)) or fx <= 0.0 or fy <= 0.0:
-            self.get_logger().warn(f"TF skip: invalid intrinsics fx={fx}, fy={fy}")
             return
         if (not np.isfinite(cx)) or (not np.isfinite(cy)):
-            self.get_logger().warn(f"TF skip: invalid principal point cx={cx}, cy={cy}")
             return
 
         H, W = depth_m.shape
         n = len(flat_xyz) // 3
 
-        sent = 0
-        skip_vis = 0
-        skip_uv_nan = 0
-        skip_uv_oob = 0
-        skip_depth = 0
-        skip_xy_nan = 0
-
         for i in range(n):
             vvis = vis_list[i] if i < len(vis_list) else 0.0
             vpres = pres_list[i] if i < len(pres_list) else 0.0
             if vvis < self.visibility_thr or vpres < self.presence_thr:
-                skip_vis += 1
                 continue
 
             u = float(flat_xyz[3 * i + 0])
             v = float(flat_xyz[3 * i + 1])
 
             if (not np.isfinite(u)) or (not np.isfinite(v)):
-                skip_uv_nan += 1
                 continue
             if not (0.0 <= u < float(W) and 0.0 <= v < float(H)):
-                skip_uv_oob += 1
                 continue
 
             z = self._robust_depth(depth_m, int(v), int(u))
             if (not np.isfinite(z)) or (z < self.min_depth_m) or (z > self.max_depth_m):
-                skip_depth += 1
                 continue
 
             X = (u - cx) / fx * z
             Y = (v - cy) / fy * z
-            if (not np.isfinite(X)) or (not np.isfinite(Y)):
-                skip_xy_nan += 1
+            if (not np.isfinite(X)) or (not np.isfinite(Y)) or (not np.isfinite(z)):
                 continue
 
             t = TransformStamped()
@@ -368,6 +360,7 @@ class HolisticPoseTFNode(Node):
             t.header.frame_id = self.camera_frame
             name = POSE_NAMES[i] if i < len(POSE_NAMES) else f"landmark_{i}"
             t.child_frame_id = f"{self.child_prefix}/{name}"
+
             t.transform.translation.x = float(X)
             t.transform.translation.y = float(Y)
             t.transform.translation.z = float(z)
@@ -375,24 +368,15 @@ class HolisticPoseTFNode(Node):
             t.transform.rotation.y = 0.0
             t.transform.rotation.z = 0.0
             t.transform.rotation.w = 1.0
-            self.tf_broadcaster.sendTransform(t)
-            sent += 1
 
-        self._publish_count += 1
-        if self._publish_count % 30 == 0:
-            self.get_logger().info(
-                f"TF rear: sent={sent}, skip_vis={skip_vis}, skip_uv_nan={skip_uv_nan}, "
-                f"skip_uv_oob={skip_uv_oob}, skip_depth={skip_depth}, skip_xy_nan={skip_xy_nan}, "
-                f"fx={fx:.2f}, fy={fy:.2f}, cx={cx:.2f}, cy={cy:.2f}"
-            )
+            self.tf_broadcaster.sendTransform(t)
 
     def process_image(self, cv_image):
         height, width = cv_image.shape[:2]
 
-        # ROI crop
         if self.roi_enabled and self.roi_width > 0 and self.roi_height > 0:
-            roi_x = int(np.clip(self.roi_x, 0, width-1))
-            roi_y = int(np.clip(self.roi_y, 0, height-1))
+            roi_x = int(np.clip(self.roi_x, 0, width - 1))
+            roi_y = int(np.clip(self.roi_y, 0, height - 1))
             roi_x2 = int(np.clip(roi_x + self.roi_width, 0, width))
             roi_y2 = int(np.clip(roi_y + self.roi_height, 0, height))
             processing_image = cv_image[roi_y:roi_y2, roi_x:roi_x2]
@@ -404,38 +388,35 @@ class HolisticPoseTFNode(Node):
             roi_x2 = width
             roi_y2 = height
 
-        # BGR → RGB
         image_rgb = cv2.cvtColor(processing_image, cv2.COLOR_BGR2RGB)
         image_rgb.flags.writeable = False
-
         results = self.holistic.process(image_rgb)
-
         image_rgb.flags.writeable = True
         annotated = cv2.cvtColor(image_rgb, cv2.COLOR_RGB2BGR)
 
-        # Pose（33点）を描画
         if results.pose_landmarks:
             self.mp_drawing.draw_landmarks(
-                annotated, results.pose_landmarks, self.mp_holistic.POSE_CONNECTIONS,
+                annotated,
+                results.pose_landmarks,
+                self.mp_holistic.POSE_CONNECTIONS,
                 landmark_drawing_spec=self.mp_drawing_styles.get_default_pose_landmarks_style()
             )
 
-        # ROIを元画像へ戻す
         if self.roi_enabled and self.roi_width > 0 and self.roi_height > 0:
             full_annotated = cv_image.copy()
             full_annotated[roi_y:roi_y2, roi_x:roi_x2] = annotated
         else:
             full_annotated = annotated
 
-        # 2Dランドマーク（x_pix, y_pix, z_mp）＋ visibility/presence
         pose_landmarks, vis_list, pres_list = self._extract_pose_landmarks(
             results, width, height, roi_offset, (roi_x, roi_y, roi_x2, roi_y2)
         )
 
-        return full_annotated, (pose_landmarks, vis_list, pres_list), (self.roi_x, self.roi_y, self.roi_width, self.roi_height, self.roi_enabled)
+        return full_annotated, (pose_landmarks, vis_list, pres_list), (
+            self.roi_x, self.roi_y, self.roi_width, self.roi_height, self.roi_enabled
+        )
 
     def _extract_pose_landmarks(self, results, width, height, roi_offset, roi_bbox):
-        # 事前に固定長を NaN/0.0 で初期化
         xyz_flat = [float('nan')] * (NUM_LANDMARKS * 3)
         vis_list = [0.0] * NUM_LANDMARKS
         pres_list = [0.0] * NUM_LANDMARKS
@@ -448,14 +429,14 @@ class HolisticPoseTFNode(Node):
                 lm = lm_list[i]
                 x = lm.x * roi_w + roi_offset[0]
                 y = lm.y * roi_h + roi_offset[1]
-                z = lm.z  # MediaPipe相対Z（参考値）
+                z = lm.z
 
                 base = 3 * i
                 xyz_flat[base + 0] = float(x)
                 xyz_flat[base + 1] = float(y)
                 xyz_flat[base + 2] = float(z)
                 vis_list[i] = float(getattr(lm, 'visibility', 0.0))
-                pres_list[i] = float(getattr(lm, 'presence',  0.0))
+                pres_list[i] = float(getattr(lm, 'presence', 0.0))
 
         return xyz_flat, vis_list, pres_list
 
@@ -468,7 +449,6 @@ def main(args=None):
     except KeyboardInterrupt:
         pass
     finally:
-        # Safe close
         try:
             if hasattr(node, 'holistic') and node.holistic is not None:
                 node.holistic.close()
