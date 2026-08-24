@@ -121,9 +121,9 @@ ros2 launch camina_ros2 camina_rear.launch.py
 ```
 #### rosbag / カメラ画像を録画する
 ```bash
-#NUC37
+#NUC35
 cd ~/ros2_ws/rosbag
-ros2 bag record --topics /front_camera/color/camera_info /front_camera/color/image_raw/compressed /front_camera/depth/camera_info /front_camera/depth/image_raw/compressedDepth /top_camera/color/camera_info /top_camera/color/image_raw/compressed /top_camera/depth/camera_info /top_camera/depth/image_raw/compressedDepth /tf /tf_static /cibo/joint_states /cibo/robot_description
+ros2 bag record --topics /camera_front/color/camera_info /camera_front/color/image_raw /camera_front/depth/camera_info /camera_front/depth/image_raw  /tf /tf_static
 ```
 
 
