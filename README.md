@@ -119,6 +119,12 @@ Mediapipe for rear camera
 # NUC34
 ros2 launch camina_ros2 camina_rear.launch.py
 ```
+#### rosbag / カメラ画像を録画する
+```bash
+#NUC37
+cd ~/ros2_ws/rosbag
+ros2 bag record --topics /front_camera/color/camera_info /front_camera/color/image_raw/compressed /front_camera/depth/camera_info /front_camera/depth/image_raw/compressedDepth /top_camera/color/camera_info /top_camera/color/image_raw/compressed /top_camera/depth/camera_info /top_camera/depth/image_raw/compressedDepth /tf /tf_static /cibo/joint_states /cibo/robot_description
+```
 
 
 ## :triangular_ruler: Adjustment
