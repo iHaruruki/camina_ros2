@@ -123,7 +123,7 @@ ros2 launch camina_ros2 camina_rear.launch.py
 ```bash
 #NUC35
 cd ~/ros2_ws/rosbag
-ros2 bag record --topics /camera_front/color/camera_info /camera_front/color/image_raw /camera_front/depth/camera_info /camera_front/depth/image_raw  /camera_rear/color/camera_info /camera_rear/color/image_raw /camera_rear/depth/camera_info /camera_rear/depth/image_raw /tf /tf_static /scan 
+ros2 bag record --topics /camera_front/color/camera_info /camera_front/color/image_raw /camera_front/depth/camera_info /camera_front/depth/image_raw  /camera_rear/color/camera_info /camera_rear/color/image_raw /camera_rear/depth/camera_info /camera_rear/depth/image_raw /tf /tf_static /scan /robot_description
 ```
 
 
